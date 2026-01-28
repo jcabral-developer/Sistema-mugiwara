@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+:root{
+    --gold:#fbc531;
+    --red:#e84118;
+    --wood:#4b2c20;
+    --bg:#f7f1e3;
+}
+
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:var(--bg);
+}
+
+/* ===== TOPBAR ===== */
+.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--wood);
+    padding:15px 30px;
+    color:white;
+    border-bottom:5px solid #2f3542;
+}
+
+.logo{
+    font-family:'Bangers',cursive;
+    font-size:2.5rem;
+    color:var(--gold);
+}
+
+.menu{
+    display:flex;
+    gap:25px;
+}
+
+.menu div{
+    cursor:pointer;
+    font-weight:bold;
+    padding:10px 20px;
+    border-radius:10px;
+}
+
+.menu div:hover{
+    background:var(--red);
+}
+
+/* ===== CONTENIDO ===== */
+.main{
+    padding:40px;
+}
+
+.panel{
+    background:#fff;
+    max-width:1100px;
+    margin:auto;
+    border-radius:20px;
+    padding:30px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+
+.titulo{
+    font-size:2rem;
+    color:var(--wood);
+    margin-bottom:20px;
+}
+
+/* ===== SECCIONES ===== */
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:30px;
+}
+
+.box{
+    background:#f9f9f9;
+    padding:20px;
+    border-radius:15px;
+    border:2px solid var(--wood);
+}
+
+.box h3{
+    color:var(--wood);
+}
+
+/* inputs */
+input, select{
+    width:100%;
+    padding:10px;
+    margin:5px 0 15px 0;
+    border-radius:10px;
+    border:2px solid #ccc;
+}
+
+button{
+    background:var(--red);
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:var(--gold);
+    color:black;
+}
+
+.tabla{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.tabla th, .tabla td{
+    padding:10px;
+    border-bottom:1px solid #ccc;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <div class="logo">🏴‍☠️ MUGIWARA</div>
+    <div class="menu">
+        <div onclick="location.href='index.html'">Inicio</div>
+        <div onclick="location.href='stock.html'">Stock</div>
+        <div>Configuraciones</div>
+    </div>
+</div>
+
+<div class="main">
+<div class="panel">
+
+<div class="titulo">🛠 Configuración de Producción</div>
+
+<div class="grid">
+
+<!-- INSUMOS -->
+<div class="box">
+<h3>📦 Registrar Insumo</h3>
+
+<input type="text" id="nombre" placeholder="Ej: Harina">
+<select id="unidad">
+    <option value="kg">Kg</option>
+    <option value="gr">Gramos</option>
+    <option value="unid">Unidades</option>
+</select>
+
+<input type="number" id="precio" placeholder="Precio total de compra ($)">
+<input type="number" id="cantidad" placeholder="Cantidad comprada">
+
+<button onclick="agregarInsumo()">Guardar Insumo</button>
+</div>
+
+<!-- RENDIMIENTO -->
+<div class="box">
+<h3>🍕 Rendimiento por Producto</h3>
+
+<select id="insumoSelect"></select>
+
+<input type="text" id="producto" placeholder="Ej: Pizza">
+<input type="number" id="rinde" placeholder="Cuántas pizzas por unidad">
+
+<button onclick="agregarRendimiento()">Guardar Rendimiento</button>
+</div>
+
+</div>
+
+<br>
+
+<h3>📊 Reglas de Producción</h3>
+<table class="tabla">
+<thead>
+<tr>
+    <th>Insumo</th>
+    <th>Producto</th>
+    <th>Rinde</th>
+</tr>
+</thead>
+<tbody id="tablaRendimiento"></tbody>
+</table>
+
+</div>
+</div>
+
+<script>
+let insumos = [];
+let reglas = [];
+
+function agregarInsumo(){
+    let nombre = document.getElementById("nombre").value;
+    let unidad = document.getElementById("unidad").value;
+    let precio = document.getElementById("precio").value;
+    let cantidad = document.getElementById("cantidad").value;
+
+    insumos.push({nombre, unidad, precio, cantidad});
+
+    let select = document.getElementById("insumoSelect");
+    let opt = document.createElement("option");
+    opt.text = nombre;
+    select.add(opt);
+
+    alert("Insumo guardado");
+}
+
+function agregarRendimiento(){
+    let insumo = document.getElementById("insumoSelect").value;
+    let producto = document.getElementById("producto").value;
+    let rinde = document.getElementById("rinde").value;
+
+    reglas.push({insumo, producto, rinde});
+
+    let fila = `<tr>
+        <td>${insumo}</td>
+        <td>${producto}</td>
+        <td>${rinde}</td>
+    </tr>`;
+
+    document.getElementById("tablaRendimiento").innerHTML += fila;
+}
+</script>
+
+</body>
+</html>

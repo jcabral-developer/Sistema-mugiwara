@@ -1,0 +1,194 @@
+:root {
+    --primary: #e84118;
+    --dark: #2f3542;
+    --text-main: #2d3436;
+    --text-light: #636e72;
+    --bg-form: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f8ff;
+    overflow: hidden;
+}
+
+.split-screen {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+
+}
+
+/* --- LADO IZQUIERDO: FORMULARIO --- */
+.left-side {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-form);
+    padding: 40px;
+    z-index: 2;
+    background-color:#F8F8FF ;
+}
+
+.form-container {
+    max-width: 400px;
+    width: 100%;
+}
+
+.main-logo {
+    height: 80px;
+    margin-bottom: 20px;
+}
+
+.form-header h1 {
+    font-size: 2rem;
+    color: var(--dark);
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.form-header p {
+    color: var(--text-light);
+    margin-bottom: 30px;
+}
+
+/* --- INPUTS MODERNOS --- */
+.input-wrapper {
+    margin-bottom: 20px;
+}
+
+.input-wrapper label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 14px;
+    border: 1.5px solid #dfe6e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.input-wrapper input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(232, 65, 24, 0.1);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    margin-bottom: 25px;
+}
+
+.forgot-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* --- BOTÓN PREMIUM --- */
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: var(--dark);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #000;
+    transform: translateY(-2px);
+}
+
+/* --- LADO DERECHO: IMAGEN --- */
+.right-side {
+    flex: 1.2;
+    background: url('/Sistema_mugiwara/public/img/ImagenMugiwara.jpeg') no-repeat center center;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 60px;
+        /* esquinas redondeadas */
+clip-path: ellipse(80% 80% at 80% 50%);
+    
+    /* Quitamos los radios antiguos porque el clip-path hace el trabajo */
+    border-radius: 0; 
+    overflow: hidden;
+    height: 100vh;
+ 
+
+}
+
+/* Superposición degradada para que se vea el texto sobre la imagen */
+.right-side::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+}
+
+.overlay-text {
+    position: relative;
+    z-index: 3;
+    color: white;
+}
+
+.overlay-text h2 {
+    font-family: 'Bangers', cursive;
+    font-size: 3rem;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.form-footer {
+    margin-top: 50px;
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+    .right-side { display: none; }
+    .left-side { flex: 1; }
+}
+
+.main-footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.signature {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 2px solid transparent;
+    transition: 0.3s;
+}
+
+.signature:hover {
+    border-bottom: 2px solid var(--primary);
+    letter-spacing: 1px;
+}

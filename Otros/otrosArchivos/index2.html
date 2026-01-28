@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+        :root {
+            --op-gold: #ffd32a;
+            --op-blue: #0fbcf9;
+            --op-red: #ff3f34;
+            --op-dark: #1e272e;
+        }
+
+        body {
+            margin: 0;
+            background-color: #f1f2f6;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Contenedor Horizontal Superior */
+        .navbar-pirata {
+            background-color: var(--op-dark);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 20px;
+            height: 80px;
+            border-bottom: 5px solid #000;
+        }
+
+        .logo-nav {
+            font-family: 'Bangers', cursive;
+            color: var(--op-gold);
+            font-size: 24px;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        /* Contenedor de las opciones */
+        .nav-links {
+            display: flex;
+            height: 100%;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: white;
+            font-family: 'Bangers', cursive;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+            border-left: 2px solid rgba(255,255,255,0.1);
+            transition: all 0.2s;
+            position: relative;
+            min-width: 100px;
+        }
+
+        /* El efecto de hover estilo anime */
+        .nav-item:hover {
+            background-color: var(--op-red);
+            transform: translateY(5px);
+            border-bottom: 5px solid var(--op-gold);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            margin-bottom: 2px;
+        }
+
+        .nav-text {
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* Alerta de Stock Crítico en el menú */
+        .alerta-burbuja {
+            position: absolute;
+            top: 10px;
+            right: 5px;
+            background: var(--op-gold);
+            color: black;
+            border: 2px solid black;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar-pirata">
+        <div class="logo-nav">🍖 SHAKKY'S BAR</div>
+
+        <div class="nav-links">
+         
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚔️</span>
+                <span class="nav-text">PEDIDOS</span>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">🍖</span>
+                <span class="nav-text">STOCK</span>
+                <div class="alerta-burbuja">!</div>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">🍳</span>
+                <span class="nav-text">PRODUCCIÓN</span>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">💰</span>
+                <span class="nav-text">GANACIAS</span>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📜</span>
+                <span class="nav-text">REPORTES</span>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">🛠️</span>
+                <span class="nav-text">AJUSTES</span>
+            </a>
+        </div>
+    </nav>
+
+    <div style="padding: 50px; text-align: center;">
+        <h2>Vista de Dashboard Seleccionada</h2>
+        <p>El menú de arriba permite cambiar entre los módulos de tu arquitectura.</p>
+    </div>
+
+</body>
+</html>

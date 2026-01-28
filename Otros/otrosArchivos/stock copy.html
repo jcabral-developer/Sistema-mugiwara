@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock - Mugiwara</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+        /* 1️⃣ UNIFICACIÓN DE COLORES (Igual a la Home) */
+        :root {
+            --gold: #fbc531;
+            --red: #e84118;
+            --wood: #4b2c20;
+            --bg: #f7f1e3;
+            /* Colores extra para la tabla */
+            --op-green: #27ae60;
+            --op-table-bg: #fdf2d5;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #2c1e14; /* Fondo madera oscuro para el stock */
+            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+            color: #fff;
+        }
+
+        /* 2️⃣ BARRA SUPERIOR (IDÉNTICA A TU HOME) */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--wood);
+            padding: 15px 30px;
+            color: white;
+            border-bottom: 5px solid #2f3542;
+            box-shadow: 0 5px 15px rgba(0,0,0,.5);
+        }
+
+        .logo {
+            font-family: 'Bangers', cursive;
+            font-size: 2.5rem;
+            letter-spacing: 3px;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .menu {
+            display: flex;
+            gap: 25px;
+        }
+
+        .menu div {
+            cursor: pointer;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: .3s;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu div:hover {
+            background: var(--red);
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        /* EL BADGE ROJO QUE PARPADEA */
+        .badge {
+            background: var(--red);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: .8rem;
+            margin-left: 8px;
+            animation: blink 1s infinite;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        @keyframes blink { 50% { opacity: .5; } }
+
+        /* 3️⃣ CONTENIDO ANCHO (Margen de 50px) */
+        .container {
+            margin: 30px 50px; 
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* BOTÓN VOLVER */
+        .btn-volver {
+            align-self: flex-start;
+            background: #7f8c8d;
+            color: white;
+            border: 3px solid #000;
+            padding: 8px 20px;
+            font-family: 'Bangers', cursive;
+            text-decoration: none;
+            box-shadow: 4px 4px 0px #000;
+            transition: 0.2s;
+        }
+
+        .btn-volver:hover {
+            background: #95a5a6;
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #000;
+        }
+
+        /* TARJETAS DE ALERTA */
+        .resumen-alertas {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .alerta-card {
+            background: #fffbe6;
+            border: 4px solid var(--wood);
+            padding: 20px;
+            color: #3d2b1f;
+            box-shadow: 8px 8px 0px #000;
+        }
+
+        .alerta-card h3 {
+            font-family: 'Bangers', cursive;
+            margin-top: 0;
+            font-size: 1.5rem;
+            border-bottom: 2px dashed var(--wood);
+        }
+
+        .critico { border-top: 10px solid var(--red); }
+        .bajo-card { border-top: 10px solid var(--gold); }
+        .ok { border-top: 10px solid var(--op-green); }
+
+        /* TABLA DE BODEGA */
+        .seccion-bodega {
+            background: var(--op-table-bg);
+            border: 8px solid var(--wood);
+            padding: 40px;
+            color: #3d2b1f;
+            box-shadow: 15px 15px 0px rgba(0,0,0,0.4);
+            border-radius: 5px;
+        }
+
+        .seccion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-family: 'Bangers', cursive;
+            font-size: 3rem;
+            margin: 0;
+            color: var(--wood);
+            text-shadow: 2px 2px 0px var(--gold);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.2rem;
+        }
+
+        th {
+            background: var(--wood);
+            color: var(--gold);
+            font-family: 'Bangers', cursive;
+            padding: 15px;
+            text-align: left;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 2px solid #d4c3a3;
+            font-weight: bold;
+        }
+
+        .btn-compra {
+            background: var(--red);
+            color: white;
+            border: 4px solid #000;
+            padding: 15px 40px;
+            font-family: 'Bangers', cursive;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 6px 6px 0px #000;
+        }
+
+        /* MODAL (Invisible por defecto) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none; /* Se activa con JS */
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <a href="index.html" class="logo">🏴‍☠️ MUGIWARA</a>
+
+    <div class="menu">
+        <div onclick="location.href='index.html'">⚔️ Pedidos</div>
+        <div onclick="location.href='stock.html'">🍖 Stock <span class="badge">Bajo</span></div>
+        <div>🍳 Producción</div>
+        <div>💰 Caja</div>
+        <div>📜 Reportes</div>
+        <div>🛠️ Config</div>
+    </div>
+</div>
+
+<div class="container">
+    
+    <a href="index.html" class="btn-volver">🔙 VOLVER AL INICIO</a>
+
+    <div class="resumen-alertas">
+        <div class="alerta-card critico">
+            <h3>🚨 CRÍTICO</h3>
+            <p>Milanesas: 15u</p>
+        </div>
+       
+        </div>
+    </div>
+
+    <div class="seccion-bodega">
+        <div class="seccion-header">
+            <h2>📜 Insumos</h2>
+            <button class="btn-compra" id="btnAbrir">🍖 CARGAR COMPRA</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>INSUMO</th>
+                    <th>CANTIDAD</th>
+                    <th>ESTADO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Queso Muzzarella</td>
+                    <td>3 kg</td>
+                    <td><b style="color:var(--red)">⚠️ BAJO</b></td>
+                </tr>
+                <tr>
+                    <td>Papas</td>
+                    <td>10 kg</td>
+                    <td><b style="color:var(--op-green)">🟢 OK</b></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Lógica para abrir el modal (Si ya tienes el HTML del modal abajo)
+    const btnAbrir = document.getElementById("btnAbrir");
+    const modal = document.getElementById("miModal");
+
+    if(btnAbrir && modal) {
+        btnAbrir.onclick = function() { modal.style.display = "flex"; }
+    }
+</script>
+
+</body>
+</html>

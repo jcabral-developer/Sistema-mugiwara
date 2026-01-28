@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Fuente estilo Cartoon/Anime */
+        @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Ubuntu:wght@700&display=swap');
+
+        :root {
+            --anime-pink: #ff4757;
+            --anime-blue: #54a0ff;
+            --anime-yellow: #feca57;
+            --anime-dark: #2f3542;
+            --anime-white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            background-color: #f1f2f6;
+            font-family: 'Ubuntu', sans-serif;
+        }
+
+        /* Barra Superior Estilo "Action UI" */
+        .nav-anime {
+            background-color: var(--anime-dark);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            border-bottom: 6px solid #000;
+            gap: 15px;
+            overflow-x: auto;
+        }
+
+        .logo-box {
+            background: var(--anime-pink);
+            padding: 5px 15px;
+            border: 3px solid #000;
+            transform: skew(-10deg); /* Inclinación clásica anime */
+            margin-right: 20px;
+        }
+
+        .logo-box span {
+            color: white;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.5rem;
+            display: inline-block;
+            transform: skew(10deg);
+        }
+
+        /* Opciones del Menú */
+        .btn-nav {
+            text-decoration: none;
+            color: var(--anime-white);
+            background: #444;
+            padding: 8px 18px;
+            border: 3px solid #000;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 90px;
+            position: relative;
+        }
+
+        /* Colores por sección según tu arquitectura */
+        .btn-nav:hover {
+            transform: scale(1.1) translateY(5px);
+            z-index: 10;
+        }
+
+        /* Dashboard */
+        .btn-dash:hover { background: var(--anime-blue); }
+        /* Pedidos */
+        .btn-pedidos:hover { background: var(--anime-pink); }
+        /* Stock */
+        .btn-stock:hover { background: var(--anime-yellow); color: #000; }
+        /* Producción */
+        .btn-prod:hover { background: #1dd1a1; }
+        /* Caja */
+        .btn-caja:hover { background: #ff9f43; }
+        /* Reportes */
+        .btn-stats:hover { background: #5f27cd; }
+
+        .btn-icon {
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+
+        /* Indicador de Alerta (Stock Bajo) */
+        .alerta-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ff0000;
+            color: white;
+            border: 2px solid #000;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        /* Contenedor Principal */
+        .main-content {
+            padding: 30px;
+        }
+
+        .section-title {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 2.5rem;
+            color: var(--anime-dark);
+            text-shadow: 3px 3px 0px var(--anime-yellow);
+            -webkit-text-stroke: 1px black;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="nav-anime">
+        <div class="logo-box">
+            <span>COMIDAS-MUGIWARA!</span>
+        </div>
+
+        <a href="#" class="btn-nav btn-dash">
+            <span class="btn-icon">🏠</span>
+            <span>Inicio</span>
+        </a>
+
+        <a href="#" class="btn-nav btn-pedidos">
+            <span class="btn-icon">🍕</span>
+            <span>Pedidos</span>
+        </a>
+
+        <a href="#" class="btn-nav btn-stock">
+            <div class="alerta-badge">!</div>
+            <span class="btn-icon">📦</span>
+            <span>Stock</span>
+        </a>
+
+        <a href="#" class="btn-nav btn-prod">
+            <span class="btn-icon">🧑‍🍳</span>
+            <span>PRODUCCIÓN</span>
+        </a>
+
+        <a href="#" class="btn-nav btn-caja">
+            <span class="btn-icon">💰</span>
+            <span>GANANCIAS</span>
+        </a>
+
+        <a href="#" class="btn-nav btn-stats">
+            <span class="btn-icon">📊</span>
+            <span>REPORTES</span>
+        </a>
+
+        <a href="#" class="btn-nav">
+            <span class="btn-icon">⚙️</span>
+            <span>Ajustes</span>
+        </a>
+    </nav>
+
+    <div class="main-content">
+        <h1 class="section-title">Panel de Control</h1>
+        <p>Selecciona una opción para gestionar tu negocio.</p>
+    </div>
+
+</body>
+</html>

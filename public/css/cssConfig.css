@@ -1,0 +1,293 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+:root {
+    --gold: #fbc531;
+    --red: #e84118;
+    --wood: #4b2c20;
+    --bg: #f7f1e3;
+}
+
+/* RESET PARA QUE NADA SOBRESALGA */
+* {
+    box-sizing: border-box; /* Fundamental para que el padding no estire los inputs */
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #2c1e14;
+    background-image: url('../../public/img/16642075528857.jpg');
+    min-height: 100vh;
+}
+
+/* ===== TOPBAR (Igual a Stock) ===== */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--wood);
+    padding: 10px 30px;
+    color: white;
+    border-bottom: 5px solid #2f3542;
+    box-shadow: 0 5px 15px rgba(0,0,0,.5);
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center; /* Centra verticalmente logo y texto */
+    gap: 15px;           /* Espacio entre el logo y la palabra Mugiwara */
+    text-decoration: none;
+}
+
+.logo-img {
+   height: 60px;        /* Ajusta la altura según te guste */
+    width: auto;         /* Mantiene la proporción */
+    filter: drop-shadow(2px 2px 0px #000); /* Le da un borde tipo sticker anime */
+    transition: transform 0.3s ease;
+}
+
+.logo {
+    font-family: 'Bangers', cursive;
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-decoration: none;
+    text-shadow: 3px 3px 0px #000;
+    margin: 0;
+}
+
+.logo-img:hover {
+    transform: scale(1.1) rotate(-5deg); /* Efecto animado al pasar el mouse */
+}
+
+.menu {
+    display: flex;
+    gap: 15px;
+}
+
+.menu div {
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.menu div:hover {
+    background: var(--red);
+    box-shadow: 0 0 10px var(--gold);
+}
+
+.badge {
+    background: var(--red);
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    animation: blink 1s infinite;
+}
+
+/* ===== CONTENIDO ===== */
+.main {
+    padding: 40px 20px;
+}
+
+.titulo-principal {
+    font-family: 'Bangers', cursive;
+    text-align: center;
+    font-size: 3rem;
+    color: var(--wood);
+    margin-bottom: 10px;
+}
+
+.card {
+    background: var(--bg);
+    border: 8px solid var(--wood);
+    border-radius: 10px;
+    padding: 40px;
+    max-width: 1100px;
+    margin: auto;
+    box-shadow: 20px 20px 0px rgba(0,0,0,0.4);
+}
+
+h2 {
+    font-family: 'Bangers', cursive;
+    color: var(--red);
+    font-size: 2rem;
+    border-bottom: 4px solid var(--wood);
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+}
+#h2-titulo{
+    padding-top: 40px;
+}
+
+/* GRID PRINCIPAL */
+.grid-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.box {
+    background: #fffbe6;
+    border: 4px solid var(--wood);
+    padding: 25px;
+    box-shadow: 8px 8px 0px #000;
+    height: 100%;
+}
+
+.campo {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    color: var(--wood);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+input, select {
+    width: 100%; /* Ahora sí ocupa el 100% exacto sin salirse */
+    padding: 12px;
+    border: 3px solid #000;
+    font-weight: bold;
+    font-size: 1rem;
+    background: white;
+}
+
+/* BOTONES ESTILO ANIME */
+.btn-pro {
+    width: 100%;
+    background: var(--red);
+    color: white;
+    border: 3px solid #000;
+    padding: 15px;
+    font-family: 'Bangers', cursive;
+    font-size: 1.4rem;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px #000;
+    transition: 0.2s;
+}
+
+.btn-pro:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 7px 7px 0px #000;
+}
+
+/* SECCION RENDIMIENTO */
+.grid-receta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.resultado-display {
+    background: var(--wood);
+    color: white;
+    padding: 30px;
+    text-align: center;
+    font-family: 'Bangers', cursive;
+    font-size: 1.5rem;
+    border: 4px dashed var(--gold);
+}
+
+.big-text { font-size: 2.5rem; color: var(--gold); }
+.gold { color: var(--gold); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .grid-main, .grid-receta { grid-template-columns: 1fr; }
+}
+/* --- AJUSTES DE ANCHO Y TABLA --- */
+
+.card-wide {
+    background: var(--bg);
+    border: 8px solid var(--wood);
+    border-radius: 10px;
+    padding: 40px;
+    max-width: 1400px; /* ANCHO AUMENTADO */
+    margin: auto;
+    box-shadow: 20px 20px 0px rgba(0,0,0,0.4);
+}
+
+.grid-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+/* Para poner dos inputs en una misma fila dentro del box */
+.campo-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* GRID DE RECETA (Formulario a la izquierda, Tabla a la derecha) */
+.grid-receta {
+    display: grid;
+    grid-template-columns: 400px 1fr; /* Formulario fijo, tabla flexible */
+    gap: 40px;
+}
+
+/* ESTILO DE LA TABLA PRO */
+.tabla-container h3 {
+    font-family: 'Bangers', cursive;
+    margin-top: 0;
+    color: var(--wood);
+}
+
+.tabla-pro {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 3px solid var(--wood);
+}
+
+.tabla-pro th {
+    background: var(--wood);
+    color: var(--gold);
+    padding: 12px;
+    font-family: 'Bangers', cursive;
+    text-align: left;
+}
+
+.tabla-pro td {
+    padding: 15px;
+    border-bottom: 2px solid #eee;
+    font-weight: bold;
+    color: #333;
+}
+
+.tag-rinde {
+    background: var(--gold);
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 2px solid #000;
+}
+
+.btn-del {
+    background: var(--red);
+    border: 2px solid #000;
+    color: white;
+    cursor: pointer;
+    padding: 5px 8px;
+    box-shadow: 2px 2px 0px #000;
+}
+
+.btn-del:hover { transform: scale(1.1); }
+
+/* Ajuste de inputs para que no se pisen */
+input, select {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}

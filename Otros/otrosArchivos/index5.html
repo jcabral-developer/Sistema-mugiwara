@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Oswald:wght@700&display=swap');
+
+  body {
+    background-color: #0f0c29; /* Fondo oscuro espacial */
+    margin: 0;
+    font-family: 'Oswald', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Barra de navegación con corte diagonal */
+  .nav-cyber {
+    background: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    gap: 10px;
+    border-bottom: 4px solid #00fbff; /* Línea de neón */
+  }
+
+  /* Botones estilo "Diamond Cut" */
+  .nav-link {
+    text-decoration: none;
+    color: #fff;
+    background: #16213e;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%); /* Forma de trapecio inclinado */
+    border: 2px solid #0f3460;
+    transition: all 0.3s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-link:hover {
+    background: #e94560; /* Color rojizo vibrante */
+    color: white;
+    transform: skewX(-5deg) scale(1.05);
+    border-color: #fff;
+    box-shadow: 0px 0px 20px rgba(233, 69, 96, 0.6);
+  }
+
+  /* El botón de la sección actual */
+  .active {
+    background: #00fbff;
+    color: #1a1a2e;
+    font-weight: 900;
+    box-shadow: 0px 0px 15px #00fbff;
+  }
+
+  /* Alerta de Stock Estilo "Glitch" */
+  .stock-alert {
+    background: #ff0055;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    position: absolute;
+    top: 0;
+    right: 15%;
+    border: 1px solid white;
+    animation: flash 0.5s infinite;
+  }
+
+  @keyframes flash {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+
+  /* Título del Dashboard */
+  .hero-title {
+    padding: 60px;
+    text-align: center;
+  }
+
+  .glitch-text {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 4rem;
+    color: white;
+    text-transform: uppercase;
+    position: relative;
+    display: inline-block;
+    text-shadow: 3px 3px #ff0055, -3px -3px #00fbff;
+  }
+
+</style>
+</head>
+<body>
+
+  <nav class="nav-cyber">
+    <a href="#" class="nav-link active"><span>🧭</span> DASHBOARD</a>
+
+    <a href="#" class="nav-link"><span>🍕</span> PEDIDOS</a>
+
+    <a href="#" class="nav-link">
+      <span>📦</span> STOCK
+      <span class="stock-alert">LOW</span>
+    </a>
+
+    <a href="#" class="nav-link"><span>🧑‍🍳</span> COCINA</a>
+
+    <a href="#" class="nav-link"><span>💰</span> CAJA</a>
+
+    <a href="#" class="nav-link"><span>📊</span> REPORTES</a>
+
+    <a href="#" class="nav-link"><span>⚙️</span> CONFIG</a>
+  </nav>
+
+  <div class="hero-title">
+    <h1 class="glitch-text">SISTEMA V.2</h1>
+  </div>
+
+</body>
+</html>
