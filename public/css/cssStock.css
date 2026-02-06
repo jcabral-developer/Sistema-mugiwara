@@ -345,7 +345,7 @@
     transform: scale(1.1) rotate(-5deg); /* Efecto animado al pasar el mouse */
 }
 
-/* Ajustamos el logo texto para que no tenga el emoji pegado si ya tienes el logo */
+/* Ajustamos el logo texto para que no tenga el emoji pegado  */
 .logo {
     font-family: 'Bangers', cursive;
     font-size: 2.5rem;
@@ -354,4 +354,96 @@
     text-decoration: none;
     text-shadow: 3px 3px 0px #000;
     margin: 0;
+}
+.ticket-container {
+    max-height: 250px;
+    overflow-y: auto;
+    background: #fff;
+    border: 2px solid var(--wood);
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.form-control-mugiwara {
+    width: 100%;
+    padding: 8px;
+    border: 2px solid var(--wood);
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+#tablaDetalle thead th {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+#totalCompra {
+    font-size: 1.2rem;
+    color: var(--red);
+}
+
+/* --- ARREGLO PARA EL TICKET DINÁMICO --- */
+
+.ticket-container {
+    max-height: 250px;
+    overflow-y: auto;
+    background: #ffffff; /* Fondo blanco para que parezca un ticket de papel */
+    border: 3px solid var(--wood);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 5px;
+}
+
+/* Forzamos que el texto dentro de la tabla del modal sea oscuro */
+#tablaDetalle {
+    color: #333 !important; 
+    margin-bottom: 0;
+}
+
+#tablaDetalle thead th {
+    background-color: var(--wood) !important;
+    color: var(--gold) !important;
+    font-family: 'Bangers', cursive;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#tablaDetalle tbody td {
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* Estilo para los inputs dentro del modal para que no se vean gigantes */
+.seccion-insumos .form-control, 
+.seccion-insumos .form-select {
+    border: 2px solid var(--wood);
+    font-weight: bold;
+    color: var(--wood);
+}
+
+.seccion-insumos label {
+    color: var(--wood);
+    margin-bottom: 3px;
+    display: block;
+}
+
+#totalCompra {
+    font-size: 1.4rem;
+    color: var(--red);
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+}
+
+/* Estilo para el botón de eliminar ítem */
+.btn-remove-item {
+    background: none;
+    border: none;
+    color: var(--red);
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.btn-remove-item:hover {
+    transform: scale(1.2);
 }

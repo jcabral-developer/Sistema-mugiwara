@@ -4,28 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock - Mugiwara</title>
-    <link rel="stylesheet" href="../../public/css/cssDeModalStock.css">
-    <link rel="stylesheet" href="../../public/css/cssStock.css">
-     <link rel="icon" type="image/x-i
-    con" href="../../public/img/Gemini_Generated_Image_b3vr0wb3vr0wb3vr-removebg-preview.png" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/Sistema_mugiwara/public/css/cssDeModalStock.css">
+    <link rel="stylesheet" href="/Sistema_mugiwara/public/css/cssStock.css">
+     <link rel="icon" type="image/x-icon" href="/Sistema_mugiwara/public/img/Gemini_Generated_Image_b3vr0wb3vr0wb3vr-removebg-preview.png" />
     <style>
-        /* [Aquí va tu CSS que te pego más abajo] */
+        
     </style>
 </head>
 <body>
 
 <div class="topbar">
  <div class="logo-wrapper">
-    <img src="../../public/img/Gemini_Generated_Image_b3vr0wb3vr0wb3vr-removebg-preview.png" alt="Logo Mugiwara" class="logo-img">
+    <img src="/Sistema_mugiwara/public/img/Gemini_Generated_Image_b3vr0wb3vr0wb3vr-removebg-preview.png" alt="Logo Mugiwara" class="logo-img">
     <a href="index.html" class="logo">MUGIWARA</a>
 </div>
     <div class="menu">
-        <div onclick="location.href='index.html'">⚔️ Pedidos</div>
-        <div onclick="location.href='stock.html'">🍖 Stock <span class="badge">Bajo</span></div>
+        <div >⚔️ Pedidos</div>
+        <div onclick="cambiar('stock')">🍖 Stock <span class="badge">Bajo</span></div>
         <div>🍳 Producción</div>
         <div>💰 Caja</div>
         <div>📜 Reportes</div>
-        <div>🛠️ Config</div>
+        <div onclick="cambiar('config')">🛠️ Config</div>
     </div>
 </div>
 
@@ -46,6 +46,7 @@
         </div>
 
         <div class="alerta-card info-compra">
+            
             <h3>💰 ÚLTIMA COMPRA</h3>
             <div class="detalle-compra">
                 <p><strong>Insumo:</strong> Queso Muzzarella</p>
@@ -101,68 +102,96 @@
         </table>
     </div>
 </div>
-
 <div class="modal-overlay" id="miModal">
     <div class="modal-pergamino">
         <div class="modal-header">
             <h2>🧾 REGISTRAR COMPRA</h2>
         </div>
-        <div class="grid-cabecera">
+
+        <div class="grid-cabecera mb-3">
             <div class="campo-grupo">
                 <label>📅 FECHA</label>
-                <input type="date" value="2026-01-16">
+                <input type="date" id="compraFecha" value="<?= date('Y-m-d') ?>" class="form-control-mugiwara">
             </div>
             <div class="campo-grupo">
-                <label>🧑 PROVEEDOR</label>
-                <input type="text" placeholder="Nombre del proveedor">
+                <label>🧑 COMPRADOR / PROVEEDOR</label>
+                <select id="compraComprador" class="form-control-mugiwara">
+                    <option value="">Seleccione responsable...</option>
+                    <option value="Victoria">Victoria</option>
+                    <option value="Matias">Matias</option>
+                </select>
             </div>
         </div>
-        <div class="seccion-insumos">
-            <h3>DETALLE DEL PRODUCTO</h3>
-            <div class="grid-cabecera" style="background: white;">
-                <div class="campo-grupo">
-                    <label>INSUMO</label>
-                    <input type="text">
+
+        <hr>
+
+        <div class="seccion-insumos bg-light p-3 rounded-3 shadow-sm mb-3">
+            <h5 class="text-dark fw-bold mb-3">➕ AGREGAR ÍTEM</h5>
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="small fw-bold">INSUMO</label>
+                    
+                     <select id="itemInsumo" name="insumo_id" class="form-select" required>
+                                    <option value="">Seleccione un insumo</option>
+                                    <?php foreach ($insumos as $insumo): ?>
+                                        <option value="<?= $insumo['id'] ?>">
+                                            <?= htmlspecialchars($insumo['descripcion']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
                 </div>
-                <div class="campo-grupo">
-                    <label>CANTIDAD</label>
-                    <input type="number" placeholder="0.00">
+                <div class="col-md-2">
+                    <label class="small fw-bold">CANT.</label>
+                    <input type="number" id="itemCantidad" class="form-control" placeholder="0">
                 </div>
-                <div class="campo-grupo">
-                    <label>PRECIO TOTAL ($)</label>
-                    <input type="number" placeholder="Costo total">
+                <div class="col-md-2">
+                    <label class="small fw-bold">UNIDAD</label>
+                    <select id="itemUnidad" class="form-select">
+                        <option value="kg">Kilos (kg)</option>
+                        <option value="gr">Gramos (gr)</option>
+                        <option value="un">Unidades</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="small fw-bold">PRECIO ($)</label>
+                    <input type="number" id="itemPrecio" class="form-control" placeholder="0.00">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" onclick="agregarItem()" class="btn btn-warning w-100 fw-bold">AÑADIR</button>
                 </div>
             </div>
         </div>
+
+        <div class="ticket-container">
+            <table class="table table-sm table-hover align-middle" id="tablaDetalle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Insumo</th>
+                        <th>Cant.</th>
+                        <th>Subtotal</th>
+                        <th width="50px"></th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoDetalle">
+                    </tbody>
+                <tfoot>
+                    <tr class="table-warning font-weight-bold">
+                        <td colspan="2" class="text-end"><strong>TOTAL DE LA COMPRA:</strong></td>
+                        <td colspan="2"><strong id="totalCompra">$ 0.00</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
         <div class="footer-acciones">
             <button id="btnCerrar" class="btn-cancelar">DESCARTAR</button>
-            <button class="btn-registrar">⚓ REGISTRAR</button>
+             <button id="btnCerrar" class="btn-cancelar">REGISTRAR INSUMO</button>
+            <button class="btn-registrar" onclick="guardarTodaLaCompra()">⚓ FINALIZAR COMPRA</button>
         </div>
     </div>
 </div>
-
-<script>
-    const modal = document.getElementById("miModal");
-    const btnAbrir = document.getElementById("btnAbrir");
-    const btnCerrar = document.getElementById("btnCerrar");
-
-    btnAbrir.onclick = () => modal.style.display = "flex";
-    btnCerrar.onclick = () => modal.style.display = "none";
-    window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
-
-    function filtrarInsumos() {
-        let input = document.getElementById("inputBusqueda").value.toUpperCase();
-        let filas = document.getElementById("tablaCuerpo").getElementsByTagName("tr");
-        for (let i = 0; i < filas.length; i++) {
-            let texto = filas[i].getElementsByTagName("td")[0].textContent.toUpperCase();
-            filas[i].style.display = texto.includes(input) ? "" : "none";
-        }
-    }
-
-    function limpiarBusqueda() {
-        document.getElementById("inputBusqueda").value = "";
-        filtrarInsumos();
-    }
-</script>
+<script src="/Sistema_mugiwara/public/js/redireccion.js"></script>
+<script src="/Sistema_mugiwara/public/js/stock/abrirModal.js"></script>
+<script src="/Sistema_mugiwara/public/js/stock/agregarItemModal.js"></script>
 </body>
 </html>

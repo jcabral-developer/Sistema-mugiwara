@@ -22,6 +22,7 @@ session_set_cookie_params([
 // 3️ INICIAR SESIÓN
 session_start();
 
+
 // 4️ REGENERAR ID DE SESIÓN (anti session fixation)
 if (!isset($_SESSION['regenerated'])) {
     session_regenerate_id(true);
@@ -80,6 +81,27 @@ if (!$usuarioLogueado) {
             session_destroy();
             header('Location: index.php');
             exit;
+
+        case 'config/insumo':
+            $controller = new ConfigController();
+            $controller->registrarInsumo();
+            break;
+
+
+        case 'config/plato':
+            $controller = new ConfigController();
+            $controller->registrarPlato();
+            break;
+
+        case 'config/rendimiento':
+            $controller = new ConfigController();
+            $controller->registrarRendimiento();
+            break;
+        
+        case 'config/eliminarRegla':
+            $controller = new ConfigController();
+            $controller->eliminarRendimiento();
+            break;
 
         default:
             $controller = new DashboardController();
