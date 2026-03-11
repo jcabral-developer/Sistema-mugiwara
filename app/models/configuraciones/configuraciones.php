@@ -28,21 +28,21 @@ class Configuraciones
      * <1>. Registra un insumo si no existe
      * @throws Exception
      */
-    public function crearInsumo(string $nombre): void
+    public function crearInsumo(string $nombre, string $unidad): void
     {
         // Normalizar (clave para evitar duplicados raros)
         $nombre = mb_strtolower(trim($nombre));
-
+        $unidad = mb_strtolower(trim($unidad));
         // Verificar si ya existe
         if ($this->existeInsumo($nombre)) {
             throw new Exception("El insumo ya existe en el sistema.");
         }
 
         // Insertar
-        $sql = "INSERT INTO insumo (descripcion) VALUES (:nombre)";
+        $sql = "INSERT INTO insumo (stock, descripcion, unidad_medida, stock_minimo) VALUES (:stock, :nombre, :unidad_medida, :stock_minimo)";
         $stmt = $this->db->prepare($sql);
 
-        if (!$stmt->execute([':nombre' => $nombre])) {
+        if (!$stmt->execute([':stock' => 0, ':nombre' => $nombre, ':unidad_medida' => $unidad,':stock_minimo'=> 0 ])) {
             throw new Exception("No se pudo registrar el insumo.");
         }
     }
@@ -105,6 +105,12 @@ class Configuraciones
             throw new Exception("Ya existe una regla de producción para este producto e insumo.");
         }
 
+        if ($unidad == 'gr' || $unidad == 'kg') {
+            $cant = $this->convertirAGramos($cantidad, $unidad);
+        } else {
+            $cant = $cantidad;
+        }
+
         //  Insertar
         $sql = "
         INSERT INTO rendimiento 
@@ -116,10 +122,26 @@ class Configuraciones
         $stmt->execute([
             ':plato' => $platoId,
             ':insumo' => $insumoId,
-            ':cantidad' => $cantidad,
+            ':cantidad' => $cant,
             ':unidad' => $unidad,
             ':rendimiento' => $rendimiento
         ]);
+    }
+
+
+    private function convertirAGramos($cantidad, $unidad)
+    {
+        $unidad = strtolower(string: trim($unidad));
+
+        if ($unidad == 'kg' || $unidad == 'kilo' || $unidad == 'kilos') {
+            return $cantidad * 1000;
+        }
+
+        if ($unidad == 'gr' || $unidad == 'gramo' || $unidad == 'gramos') {
+            return $cantidad;
+        }
+
+        throw new Exception("Unidad de medida no válida: " . $unidad);
     }
 
     /***************************************************************************

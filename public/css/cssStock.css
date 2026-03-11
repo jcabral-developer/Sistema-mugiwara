@@ -1,6 +1,8 @@
  
         @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
 
+
+
         /* 1️⃣ UNIFICACIÓN DE COLORES (Igual a la Home) */
         :root {
             --gold: #fbc531;
@@ -10,6 +12,7 @@
             /* Colores extra para la tabla */
             --op-green: #27ae60;
             --op-table-bg: #fdf2d5;
+               --paper: #f7f1e3;
         }
 
         body {
@@ -23,17 +26,42 @@
   background-size: cover;  
         }
 
+/* Definición de la animación de rebote */
+@keyframes flotar {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px); /* Sube 8px */
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Clase para aplicar a la imagen */
+.logo-animado {
+    display: inline-block; /* Asegura que la transformación funcione correctamente */
+    animation: flotar 3s ease-in-out infinite; /* 3 segundos, movimiento suave, bucle infinito */
+}
+
         /*  BARRA SUPERIOR */
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--wood);
-            padding: 15px 30px;
-            color: white;
-            border-bottom: 5px solid #2f3542;
-            box-shadow: 0 5px 15px rgba(0,0,0,.5);
-        }
+     /* ===== TOPBAR (Igual a Stock) ===== */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--wood);
+    padding: 10px 30px;
+    color: white;
+    border-bottom: 5px solid #2f3542;
+    box-shadow: 0 5px 15px rgba(0,0,0,.5);
+/* ARREGLO PARA STICKY */
+    position: sticky;
+    top: 0;           /* OBLIGATORIO: indica que se pegue al borde superior */
+    z-index: 1000;
+
+}
 
         .logo {
             font-family: 'Bangers', cursive;
@@ -45,22 +73,21 @@
 
         .menu {
             display: flex;
-            gap: 25px;
+            gap: 15px;
         }
 
-        .menu div {
-            cursor: pointer;
-            font-weight: bold;
-            padding: 10px 20px;
-            border-radius: 10px;
-            transition: .3s;
-            color: white;
-            display: flex;
-            align-items: center;
-        }
+       .menu div {
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s;
+    color: white;
+    font-size: 0.9rem;
+}
 
         .menu div:hover {
-            background: var(--red);
+            background: var(--blue);
             box-shadow: 0 0 10px var(--gold);
         }
 
@@ -212,9 +239,28 @@
 
         /* DISEÑO DEL BUSCADOR */
 .buscador-container {
-    margin-bottom: 25px;
+    background: #f8f9fa;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+    margin-bottom: 20px;
+}
+
+/* layout */
+.filtro-fechas {
     display: flex;
-    justify-content: flex-start;
+    gap: 20px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+/* campo */
+.campo-fecha {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    font-weight: bold;
+    color: #495057;
 }
 
 .grupo-busqueda {
@@ -242,6 +288,41 @@
     width: 100%;
     color: var(--wood);
 }
+/* input contenedor */
+.input-fecha {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    padding: 6px 10px;
+    transition: all .2s ease;
+    min-width: 180px;
+}
+
+/* icono */
+.input-fecha span {
+    margin-right: 8px;
+    opacity: .7;
+}
+
+/* input real */
+.input-fecha input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    width: 100%;
+    background: transparent;
+    cursor: pointer;
+}
+
+/* efecto focus */
+.input-fecha:focus-within {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 3px rgba(255,193,7,.25);
+    transform: translateY(-1px);
+}
+
 
 .btn-limpiar {
     background: var(--gold);
@@ -335,17 +416,12 @@
 }
 
 .logo-img {
-    height: 60px;        /* Ajusta la altura según te guste */
+   height: 60px;        /* Ajusta la altura según te guste */
     width: auto;         /* Mantiene la proporción */
     filter: drop-shadow(2px 2px 0px #000); /* Le da un borde tipo sticker anime */
     transition: transform 0.3s ease;
 }
 
-.logo-img:hover {
-    transform: scale(1.1) rotate(-5deg); /* Efecto animado al pasar el mouse */
-}
-
-/* Ajustamos el logo texto para que no tenga el emoji pegado  */
 .logo {
     font-family: 'Bangers', cursive;
     font-size: 2.5rem;
@@ -355,6 +431,11 @@
     text-shadow: 3px 3px 0px #000;
     margin: 0;
 }
+
+.logo-img:hover {
+    transform: scale(1.1) rotate(-5deg); /* Efecto animado al pasar el mouse */
+}
+
 .ticket-container {
     max-height: 250px;
     overflow-y: auto;
@@ -365,7 +446,7 @@
 }
 
 .form-control-mugiwara {
-    width: 100%;
+    width: 300px;
     padding: 8px;
     border: 2px solid var(--wood);
     border-radius: 5px;
@@ -447,3 +528,190 @@
 .btn-remove-item:hover {
     transform: scale(1.2);
 }
+.remito-body {
+    background-color: #fff;
+    border: 1px dashed #000;
+    padding: 20px;
+    font-family: 'Courier New', Courier, monospace; /* Fuente tipo máquina de escribir */
+}
+.btn-close-custom {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    float: right;
+}
+
+.btn-warning.btn-sm {
+    border: 2px solid #000 !important;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.btn-warning.btn-sm:hover {
+    background-color: var(--gold);
+    transform: scale(1.05);
+}
+.lista-critica {
+    list-style: none;
+    padding-left: 0;
+}
+
+.lista-critica li {
+    background: rgba(220, 53, 69, 0.1); /* Rojo muy suave */
+    border-left: 4px solid #dc3545;
+    margin-bottom: 8px;
+    padding: 10px;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.lista-critica li:hover {
+    transform: translateX(5px);
+    background: rgba(220, 53, 69, 0.2);
+}
+/* Forzar que la tabla ocupe el 100% y no cree columnas fantasma */
+#modalDetalleCompra table {
+    width: 100% !important;
+    table-layout: fixed; /* Esto es clave para que las columnas respeten el ancho */
+    border-collapse: collapse;
+}
+
+#modalDetalleCompra th, 
+#modalDetalleCompra td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Ajuste de anchos para que se vea como un remito real */
+#modalDetalleCompra th:nth-child(1) { width: 45%; } /* Insumo */
+#modalDetalleCompra th:nth-child(2) { width: 15%; } /* Cantidad */
+#modalDetalleCompra th:nth-child(3) { width: 15%; } /* U.M. */
+#modalDetalleCompra th:nth-child(4) { width: 25%; } /* Precio */
+
+ /* Estilo para las pestañas tipo One Piece */
+        .nav-tabs {
+            border-bottom: 4px solid var(--wood);
+            margin-bottom: 2px;
+            gap: 2px;
+        }
+
+        .nav-link {
+            background: var(--wood) !important;
+            color: white !important;
+            font-family: 'Bangers', cursive;
+            font-size: 1.2rem;
+            border: 3px solid #000 !important;
+            box-shadow: 4px 4px 0px #000;
+        }
+
+        .nav-link.active {
+            background: var(--gold) !important;
+            color: var(--wood) !important;
+            transform: translateY(-3px);
+            box-shadow: 6px 6px 0px #000;
+        }
+
+        .tab-content {
+            padding-top: 10px;
+        }
+
+        /* Estilo para el botón de rendimiento similar a la imagen */
+.btn-outline-dark.dropdown-toggle {
+    border: 1px solid #ced4da;
+    background: white;
+    color: #333;
+    text-align: left;
+    position: relative;
+}
+
+/* Flecha personalizada */
+.btn-outline-dark.dropdown-toggle::after {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Fila de detalle */
+.collapse td {
+    border-top: none !important;
+    padding: 0 20px 15px 20px !important;
+}
+
+
+/* Tipografía Bangers para títulos */
+.font-bangers {
+    font-family: 'Bangers', cursive;
+    letter-spacing: 2px;
+}
+
+/* Estilo de tarjeta pergamino con borde tipo manga */
+.card-pergamino {
+    background-color: var(--paper);
+    border: 5px solid #000;
+    box-shadow: 10px 10px 0px #000; /* Sombra dura tipo cómic */
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto de borde quemado o rasgado para el header */
+.card-pergamino .card-header {
+    background-color: var(--wood);
+    border-bottom: 5px solid #000;
+    color: var(--gold);
+    padding: 15px;
+}
+
+/* Ítems de la lista con estilo de recompensa/Wanted */
+.item-critico {
+    background: rgba(232, 65, 24, 0.1); /* Fondo rojo muy suave */
+    border: 3px solid #000;
+    margin-bottom: 10px;
+    transition: transform 0.2s;
+}
+
+.item-critico:hover {
+    transform: scale(1.03) rotate(-1deg);
+    background: rgba(232, 65, 24, 0.2);
+}
+
+/* Badge con estilo de "Wanted" */
+.badge-wanted {
+    font-family: 'Bangers', cursive;
+    background-color: var(--red);
+    color: white;
+    border: 2px solid #000;
+    box-shadow: 3px 3px 0px #000;
+    transform: rotate(3deg);
+}
+
+/* Estilo para la sección de Última Compra tipo Ticket Pirata */
+.ticket-pirata {
+    background-color: white;
+    border: 2px dashed #000;
+    padding: 15px;
+    position: relative;
+}
+
+/* Efecto de chincheta o clavo para el ticket */
+.ticket-pirata::before {
+    content: '📌';
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem;
+}
+
+/* Badge de rendimiento tipo Jolly Roger */
+.badge-jolly {
+    font-family: 'Bangers', cursive;
+    background-color: var(--wood);
+    color: var(--gold);
+    border: 2px solid #000;
+    box-shadow: 3px 3px 0px #000;
+}
+

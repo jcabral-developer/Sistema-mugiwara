@@ -6,13 +6,13 @@ function cambiar(seccion){
 
 
     if(seccion=="pedidos"){
-        cont.innerHTML="<h2>⚔️ Pedidos</h2><p>Aquí se cargan y gestionan los pedidos.</p>";
+        window.location.href = "index.php?route=pedidos";
     }
     if(seccion=="stock"){
         window.location.href = "index.php?route=stock";
     }
-    if(seccion=="produccion"){
-        cont.innerHTML="<h2>🍳 Producción</h2><p>Qué cocinar y qué está en proceso.</p>";
+    if(seccion=="precios"){
+        window.location.href = "index.php?route=precios";
     }
     if(seccion=="caja"){
         cont.innerHTML="<h2>💰 Caja</h2><p>Ventas, pagos y ganancias.</p>";
@@ -24,3 +24,5 @@ function cambiar(seccion){
           window.location.href = "index.php?route=config";
     }
 }
+
+

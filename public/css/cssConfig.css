@@ -22,6 +22,25 @@ body {
 }
 
 /* ===== TOPBAR (Igual a Stock) ===== */
+
+/* Definición de la animación de rebote */
+@keyframes flotar {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px); /* Sube 8px */
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Clase para aplicar a la imagen */
+.logo-animado {
+    display: inline-block; /* Asegura que la transformación funcione correctamente */
+    animation: flotar 3s ease-in-out infinite; /* 3 segundos, movimiento suave, bucle infinito */
+}
 .topbar {
     display: flex;
     justify-content: space-between;

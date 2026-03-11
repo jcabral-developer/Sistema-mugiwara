@@ -1,4 +1,4 @@
-
-function confirmarEliminacion() {
-    return confirm("⚠️ ¿Estás seguro de eliminar esta regla de producción?");
+function confirmarEliminacion(mensaje) {
+    return confirm(`⚠️ ¿Estás seguro de eliminar esta ${mensaje}?`);
 }
+

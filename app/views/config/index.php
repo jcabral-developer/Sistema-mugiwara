@@ -17,16 +17,16 @@
     <div class="topbar">
         <div class="logo-wrapper">
             <img src="/Sistema_mugiwara/public/img/Gemini_Generated_Image_b3vr0wb3vr0wb3vr-removebg-preview.png"
-                alt="Logo Mugiwara" class="logo-img">
+                alt="Logo Mugiwara" class="logo-img logo-animado">
             <a href="index.php?route=" class="logo"> MUGIWARA</a>
         </div>
         <div class="menu">
 
             <div onclick="cambiar('pedidos')">⚔️ Pedidos</div>
 
-            <div onclick="cambiar('stock')">🍖 Stock <span class="badge">Bajo</span></div>
+            <div onclick="cambiar('stock')">🍖 Stock <span  class="badge"><?php echo $bajoStock ? 'Bajo' : '' ;?></span></div>
 
-            <div onclick="cambiar('produccion')">🍳 Producción</div>
+             <div onclick="cambiar('precios')">🍳 Precios</div>
 
             <div onclick="cambiar('caja')">💰 Ganancias</div>
 
@@ -38,6 +38,7 @@
         </div>
 
     </div>
+
 
     <div class="main">
         <div class="card-wide">
@@ -110,10 +111,10 @@
                             <div class="campo">
                                 <label>Unidad</label>
                                 <select name="unidad" required>
-                                    <option value="Gramos">Gramos</option>
-                                    <option value="kilos">kilos</option>
-                                    <option value="1/2 tomate">1/2 tomate</option>
-                                    <option value="1 tomate">1 tomate</option>
+                                    <option value="gr">Gramos</option>
+                                    <option value="kg">kilos</option>
+                                    <option value="un">unidad</option>
+                                    
                                 </select>
                             </div>
                         </div>
@@ -146,6 +147,11 @@
                         <div class="campo">
                             <label>Nombre del Insumo</label>
                             <input type="text" placeholder="Ej: Harina" name="insumo" required>
+                             <label>unidad de medida</label>
+                            <select name="unidad_medida" id="unidad_medida">
+                                        <option value="un">Unidad</option>
+                                        <option value="gr">Gramos</option>
+                            </select>
                         </div>
 
                         <button type="submit" name="enviar" value="enviar" class="btn-pro">➕ REGISTRAR
@@ -168,8 +174,8 @@
             <table class="tabla-pro">
                 <thead>
                     <tr>
-                        <th>Insumo (Cantidad)</th>
-                        <th>Producto Final</th>
+                          <th>Producto Final</th>
+                         <th>Insumo (Cantidad)</th>
                         <th>Rendimiento</th>
                         <th>Acción</th>
                     </tr>
@@ -178,11 +184,12 @@
                     <?php if (!empty($reglas)): ?>
                         <?php foreach ($reglas as $regla): ?>
                             <tr>
+                                 <td><?= htmlspecialchars($regla['plato']) ?></td>
                                 <td>
                                     <?= htmlspecialchars($regla['insumo']) ?>
-                                    <small>(<?= $regla['cantidad_usada'] . ' ' . htmlspecialchars($regla['unidad']) ?>)</small>
+                                    <small>(<?= $regla['cantidad_usada']; ?>)</small>
                                 </td>
-                                <td><?= htmlspecialchars($regla['plato']) ?></td>
+                               
                                 <td>
                                     <span class="tag-rinde">
                                         <?= (int) $regla['rendimiento'] ?> Unidades

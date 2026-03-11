@@ -41,6 +41,8 @@ require_once BASE_PATH . '/app/controllers/loginController.php';
 require_once BASE_PATH . '/app/controllers/dashboardController.php';
 require_once BASE_PATH . '/app/controllers/stockController.php';
 require_once BASE_PATH . '/app/controllers/configController.php';
+require_once BASE_PATH . '/app/controllers/pedidosController.php';
+require_once BASE_PATH . '/app/controllers/preciosController.php';
 
 // 7️ OBTENER RUTA SOLICITADA
 $route = $_GET['route'] ?? '';
@@ -86,22 +88,52 @@ if (!$usuarioLogueado) {
             $controller = new ConfigController();
             $controller->registrarInsumo();
             break;
-
-
         case 'config/plato':
             $controller = new ConfigController();
             $controller->registrarPlato();
+            break;
+        case 'pedidos':
+            $controller = new PedidosController();
+            $controller->index();
+            break;
+
+        case 'precios':
+            $controller = new PreciosController();
+            $controller->index();
             break;
 
         case 'config/rendimiento':
             $controller = new ConfigController();
             $controller->registrarRendimiento();
             break;
-        
+
         case 'config/eliminarRegla':
             $controller = new ConfigController();
             $controller->eliminarRendimiento();
             break;
+        case 'stock/registrarCompra':
+            $controller = new StockController();
+            $controller->registrarCompra();
+            break;
+
+        case 'stock/obtenerDetalleCompra':
+            $controller = new StockController();
+            $controller->obtenerDetalleCompra();
+            break;
+
+        case 'stock/eliminarCompra':
+            $controller = new StockController();
+            $controller->eliminarCompra();
+            break;
+        case 'stock/actualizarLimitesYStock':
+            $controller = new StockController();
+            $controller->actualizarLimitesYStock();
+            break;
+        case 'stock/actualizarLimites':
+            $controller = new StockController();
+            $controller->actualizarLimites();
+            break;
+
 
         default:
             $controller = new DashboardController();

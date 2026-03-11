@@ -8,10 +8,12 @@ class ConfigController
         require_once BASE_PATH . '/app/models/configuraciones/insumoModel.php';
         require_once BASE_PATH . '/app/models/configuraciones/productoModel.php';
         require_once BASE_PATH . '/app/models/configuraciones/rendimientoModel.php';
+        require_once BASE_PATH . '/app/models/SistemaModel.php';
 
         $productos = ProductoModel::obtenerTodos();
         $insumos = InsumoModel::obtenerTodos();
         $reglas = RendimientoModel::obtenerTodos();
+        $bajoStock = SistemaModel::obtenerStockBajo();
 
         require_once BASE_PATH . '/app/views/config/index.php';
     }
@@ -21,7 +23,7 @@ class ConfigController
     {
 
         $nombre = self::limpiarInputs($_POST['insumo'] ?? '');           // Espacios
-
+        $unidad = self::limpiarInputs($_POST['unidad_medida'] ?? '');           // Espacios
         $errores = [];
 
         if (empty($nombre) || strlen($nombre) < 3) {
@@ -35,6 +37,10 @@ class ConfigController
             $errores[] = "El nombre del insumo solo puede contener letras y espacios.";
         }
 
+            if (empty($unidad)) {
+            $errores[] = "La unidad de medida es obligatoria.";
+        }
+     
 
 
         if ($errores) {
@@ -51,7 +57,7 @@ class ConfigController
 
 
         try {
-            $insumo->crearinsumo($nombre);
+            $insumo->crearinsumo($nombre,$unidad);
             $_SESSION['success'] = "Insumo registrado correctamente.";
         } catch (Exception $e) {
             $_SESSION['errores'][] = $e->getMessage();
@@ -104,6 +110,7 @@ class ConfigController
 
     }
 
+
     public function registrarRendimiento()
     {
 
@@ -121,7 +128,7 @@ class ConfigController
             $registrarRendimeito->crearRendimiento($plato, $insumo, $cantidad, $unidad, $rendimiento);
             $_SESSION['success'] = "Rendimiento registrado correctamente.";
         } catch (Exception $e) {
-            $_SESSION['errores'][] = $e->getMessage();
+            $_SESSION['errores'][] = $e->getMessage() . $cantidad;
         }
 
         header("Location: index.php?route=config");
