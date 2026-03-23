@@ -18,7 +18,6 @@ class LoginController
   // 1️⃣ Validar datos
         if (empty($_POST['usuario']) || empty($_POST['contrasena'])) {
             $error = "Complete todos los campos";
-            echo $error;
             require BASE_PATH . '/app/views/auth/login.php';
             return;
         }
@@ -44,7 +43,7 @@ class LoginController
         }
 
         $error = "Usuario o contraseña incorrectos ssss";
-        echo $error;
+      
         require BASE_PATH . '/app/views/auth/login.php';
     }
 

@@ -32,6 +32,10 @@
             <div onclick="cambiar('reportes')">📜 Reportes</div>
 
             <div onclick="cambiar('config')">🛠️ Config</div>
+            
+            <div onclick="confirmarLogout()" style="background: var(--red); border: 2px solid #000; box-shadow: 2px 2px 0px #000;">
+            🚪 Salir
+        </div>
 
 
         </div>
@@ -40,6 +44,8 @@
 
 
     <script src="/Sistema_mugiwara/public/js/redireccion.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <script src="/Sistema_mugiwara/public/js/alertaLogin.js"></script>
 
 </body>
 

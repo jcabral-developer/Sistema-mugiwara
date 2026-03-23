@@ -715,3 +715,8 @@
     box-shadow: 3px 3px 0px #000;
 }
 
+/* para que el alerta de sweet sea visible por encima del modal de compras */
+
+.swal2-container {
+    z-index: 99999 !important;
+}

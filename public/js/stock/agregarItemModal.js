@@ -54,43 +54,50 @@ function eliminarItem(index) {
     itemsCompra.splice(index, 1);
     renderizarTabla();
 }
+// ... (tus variables itemsCompra y la función agregarItem se mantienen igual)
 
 function guardarTodaLaCompra() {
+    // Capturamos los datos del encabezado de tu modal
+    const fecha = document.getElementById('compraFecha').value; 
+    const comprador = document.getElementById('compraComprador').value;
 
-   const fecha = document.getElementById('compraFecha').value; 
-   const comprador = document.getElementById('compraComprador').value;
-
+    // Validaciones básicas
     if (!fecha || !comprador) {
-        alert("Completa los datos del encabezado");
+        Swal.fire("Atención", "Completa los datos del encabezado (Fecha y Comprador)", "warning");
         return;
     }
-
 
     if (itemsCompra.length === 0) {
-        alert("Agrega al menos un insumo");
+        Swal.fire("Atención", "Agrega al menos un insumo a la lista", "warning");
         return;
     }
 
-    if (!isNaN(total)) {
-    console.log("El total es:", total);
-    } else {
-    console.error("Valor inválido:");
-    }
+    // Calculamos el total acumulado de los items
+    const totalFinal = itemsCompra.reduce((acc, item) => acc + item.precio, 0);
 
+    // Armamos el objeto exactamente como lo espera tu backend
+    const compra = { 
+        fecha: fecha, 
+        comprador: comprador, 
+        total: totalFinal, 
+        items: itemsCompra 
+    }; 
 
-const compra = { fecha: fecha, 
-    comprador: comprador, 
-    total: parseFloat(total) || 0, // Asegura que sea un número 
-    items: itemsCompra 
-}; 
-    console.log(compra); 
-    enviarCompra(compra); 
+    console.log("Enviando compra:", compra); 
     
-    }
+ 
+    enviarCompra(compra); 
+}
 
 function enviarCompra(compra) { 
-
-
+    Swal.fire({
+        title: 'Procesando compra...',
+        text: 'Actualizando stock y registros',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     fetch(BASE_URL + "/index.php?route=stock/registrarCompra", {
         method: "POST",
@@ -101,15 +108,32 @@ function enviarCompra(compra) {
     })
     .then(res => res.json())
     .then(data => {
-        alert(data.mensaje);
-
+        console.log(data);
         if (data.ok) {
-            location.reload();
+            Swal.fire({
+                title: "¡Éxito!",
+                text: data.mensaje || "Compra registrada correctamente",
+                icon: "success",
+                confirmButtonColor: "#198754"
+            }).then(() => {
+               location.reload(); 
+            });
+        } else {
+            Swal.fire({
+                title: "Atención",
+                text: data.mensaje || "No se pudo registrar la compra",
+                icon: "warning",
+                confirmButtonColor: "#ffc107"
+            });
         }
     })
     .catch(err => {
-        console.error(err);
-        alert("Error al registrar la compra");
+        console.error("Error en Fetch:", err);
+        Swal.fire({
+            title: "Error Crítico",
+            text: "Hubo un problema de conexión con el sistema.",
+            icon: "error",
+            confirmButtonColor: "#dc3545"
+        });
     });
 }
-

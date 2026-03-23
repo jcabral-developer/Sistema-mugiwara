@@ -83,7 +83,7 @@
                                     <option value="">Seleccione un producto</option>
                                     <?php foreach ($productos as $producto): ?>
                                         <option value="<?= $producto['id'] ?>">
-                                            <?= htmlspecialchars($producto['descripcion']) ?>
+                                            <?= ucfirst(htmlspecialchars($producto['descripcion'])) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -95,7 +95,7 @@
                                     <option value="">Seleccione un insumo</option>
                                     <?php foreach ($insumos as $insumo): ?>
                                         <option value="<?= $insumo['id'] ?>">
-                                            <?= htmlspecialchars($insumo['descripcion']) ?>
+                                            <?= ucfirst(htmlspecialchars($insumo['descripcion'])) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -114,7 +114,7 @@
                                     <option value="gr">Gramos</option>
                                     <option value="kg">kilos</option>
                                     <option value="un">unidad</option>
-                                    
+                                    <option value="LT">Litros</option>
                                 </select>
                             </div>
                         </div>
@@ -151,6 +151,7 @@
                             <select name="unidad_medida" id="unidad_medida">
                                         <option value="un">Unidad</option>
                                         <option value="gr">Gramos</option>
+                                          <option value="LT">Litros</option>
                             </select>
                         </div>
 

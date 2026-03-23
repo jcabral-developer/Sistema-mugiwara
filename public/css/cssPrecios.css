@@ -72,6 +72,12 @@
             color: var(--gold);
             text-decoration: none;
         }
+        .logo-wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%; /* Que ocupe todo el alto de la barra */
+    gap: 15px;
+}
 
         .menu {
             display: flex;
@@ -154,7 +160,7 @@
             background: rgba(255,255,255,0.5);
             font-weight: bold;
         }
-        .table-pirata tbody tr:hover td { background: var(--gold) !important; }
+        .table-pirata tbody tr:hover td { background: rgb(184, 180, 180) !important; }
 
         /* INDICADORES */
         .text-costo { color: #4b2c20; }
@@ -192,3 +198,38 @@
             box-shadow: 15px 15px 0px rgba(0,0,0,0.5);
         }
     
+
+           #buscadorPlatos:focus {
+    background-color: #fffbe6; /* Color crema suave */
+    border-color: #fbc531 !important; /* Color oro de Mugiwara */
+    box-shadow: 0 0 10px rgba(251, 197, 49, 0.5);
+}
+
+
+     .group-foto {
+            transition: transform 0.2s;
+        }
+
+        .group-foto:hover {
+            transform: scale(1.1);
+        }
+
+        .group-foto:hover img {
+            filter: brightness(0.8);
+        }
+
+        .badge-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: #fbc531;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #000;
+            pointer-events: none;
+        }

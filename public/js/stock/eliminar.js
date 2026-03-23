@@ -24,9 +24,6 @@ fetch(BASE_URL + "/index.php?route=stock/eliminarCompra", {
 
 
 
-
-
-
 function mostrarMensaje(tipo, texto){
     const contenedor = document.getElementById("mensajes");
     contenedor.innerHTML = `

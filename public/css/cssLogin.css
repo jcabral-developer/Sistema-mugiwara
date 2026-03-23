@@ -192,3 +192,36 @@ clip-path: ellipse(80% 80% at 80% 50%);
     border-bottom: 2px solid var(--primary);
     letter-spacing: 1px;
 }
+
+/* ===== ALERTA DE ERROR ESTILO MUGIWARA ===== */
+.alert-error {
+    background-color: #ffeaea; /* Fondo rosado suave */
+    border-left: 5px solid #e84118; /* Borde rojo fuerte */
+    color: #b33939; /* Texto en tono café/rojo oscuro */
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.alert-icon {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #e84118;
+    border: 2px solid #e84118;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.alert-content b {
+    display: block;
+    color: #2c1e14;
+}

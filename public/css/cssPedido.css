@@ -4,6 +4,9 @@
         /* 1. REUTILIZANDO TUS VARIABLES DE STOCK */
        
         /* 1️⃣ UNIFICACIÓN DE COLORES (Igual a la Home) */
+        * {
+    box-sizing: border-box;
+}
         :root {
             --gold: #fbc531;
             --red: #e84118;
@@ -32,7 +35,7 @@
         .font-bangers {
              font-family: 'Bangers', cursive; letter-spacing: 2px; }
 
- .topbar {
+.topbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -41,11 +44,11 @@
     color: white;
     border-bottom: 5px solid #2f3542;
     box-shadow: 0 5px 15px rgba(0,0,0,.5);
-/* ARREGLO PARA STICKY */
     position: sticky;
-    top: 0;           /* OBLIGATORIO: indica que se pegue al borde superior */
+    top: 0;
     z-index: 1000;
-
+    /* Forzamos una altura mínima para que no baile */
+    min-height: 85px; 
 }
 /* Definición de la animación de rebote */
 @keyframes flotar {
@@ -65,15 +68,6 @@
     display: inline-block; /* Asegura que la transformación funcione correctamente */
     animation: flotar 3s ease-in-out infinite; /* 3 segundos, movimiento suave, bucle infinito */
 }
-
-
-              .logo {
-            font-family: 'Bangers', cursive;
-            font-size: 2.5rem;
-            letter-spacing: 3px;
-            color: var(--gold);
-            text-decoration: none;
-        }
 
         .menu {
             display: flex;
@@ -125,6 +119,12 @@
     text-decoration: none;
     text-shadow: 3px 3px 0px #000;
     margin: 0;
+}
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%; /* Que ocupe todo el alto de la barra */
+    gap: 15px;
 }
 
 .logo-img:hover {
@@ -207,3 +207,54 @@
             padding: 2px 8px;
             border-radius: 5px;
         }
+
+
+         /* Estilos adicionales para que luzca profesional */
+        .btn-pago.active {
+            border-width: 3px !important;
+            transform: scale(1.02);
+        }
+
+        .modal-body label {
+            color: #333;
+            margin-top: 5px;
+        }
+
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        
+
+         .desarrollo {
+
+        font-weight: bold; 
+        color: #343a40; 
+        text-transform: uppercase;
+        text-size-adjust: 3px;
+    }
+
+    .card-plato {
+        text-align: center;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+
+    .card-plato:hover {
+        transform: translateY(-5px);
+        border-color: #fbc531;
+        /* Color amarillo Mugiwara */
+        background-color: #fffdf0;
+    }
+
+    .card-plato img {
+        transition: transform 0.3s ease;
+    }
+
+    .card-plato:hover img {
+        transform: rotate(5deg);
+        /* Efecto divertido al pasar el mouse */
+    }

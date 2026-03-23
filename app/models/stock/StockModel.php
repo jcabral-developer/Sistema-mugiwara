@@ -13,68 +13,185 @@ class StockModel
 
     }
 
-    public function guardarCompraCompleta($data)
-    {
-        try {
+  public function guardarCompraCompleta($data)
+{
+    try {
 
-            $this->db->beginTransaction();
+        $this->db->beginTransaction();
 
-            // encabezado
-            $sqlCompra = "INSERT INTO compras (fecha, comprador,total)
-                      VALUES (:fecha, :comprador, :total)";
-            $stmt = $this->db->prepare($sqlCompra);
+        // encabezado compra
+        $sqlCompra = "INSERT INTO compras (fecha, comprador,total)
+                  VALUES (:fecha, :comprador, :total)";
+        $stmt = $this->db->prepare($sqlCompra);
+        $stmt->execute([
+            ':fecha' => $data['fecha'],
+            ':comprador' => $data['comprador'],
+            ':total' => $data['total']
+        ]);
+
+        $compra_id = $this->db->lastInsertId();
+
+        // CREAR BACKUP
+        $sqlBackup = "INSERT INTO compra_backup (compra_id,fecha)
+                  VALUES (:compra,NOW())";
+        $stmt = $this->db->prepare($sqlBackup);
+        $stmt->execute([
+            ':compra' => $compra_id
+        ]);
+
+        $backup_id = $this->db->lastInsertId();
+
+        foreach ($data['items'] as $item) {
+
+            // ===============================
+            // GUARDAR ESTADO ANTERIOR INSUMO
+            // ===============================
+
+            $sqlEstado = "SELECT stock, precio_unitario
+                      FROM insumo
+                      WHERE id = :id";
+
+            $stmt = $this->db->prepare($sqlEstado);
+            $stmt->execute([':id'=>$item['id']]);
+
+            $estado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $sqlGuardarEstado = "INSERT INTO compra_backup_detalle
+                             (backup_id,tipo,entidad_id,stock_anterior,precio_unitario_anterior)
+                             VALUES (:backup,'insumo',:id,:stock,:precio)";
+
+            $stmt = $this->db->prepare($sqlGuardarEstado);
             $stmt->execute([
-                ':fecha' => $data['fecha'],
-                ':comprador' => $data['comprador'],
-                ':total' => $data['total']
+                ':backup'=>$backup_id,
+                ':id'=>$item['id'],
+                ':stock'=>$estado['stock'],
+                ':precio'=>$estado['precio_unitario']
             ]);
 
-            $compra_id = $this->db->lastInsertId();
+            // ===============================
+            // GUARDAR COSTO ANTERIOR PLATOS
+            // ===============================
 
-            // $total = 0; // ← IMPORTANTE
+            $sqlPlatos = "SELECT plato.id, plato.costo_receta
+                      FROM plato
+                      INNER JOIN rendimiento
+                      ON plato.id = rendimiento.plato
+                      WHERE rendimiento.insumo = :insumo";
 
-            foreach ($data['items'] as $item) {
+            $stmt = $this->db->prepare($sqlPlatos);
+            $stmt->execute([':insumo'=>$item['id']]);
 
-                // detalle
+            $platos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                $sqlDetalle = "INSERT INTO compras_detalle
-                          (compra_id, insumo_id, cantidad, unidad_medida, precio_unitario)
-                           VALUES (:compra, :insumo, :cantidad, :unidad, :precio)";
-                $stmt = $this->db->prepare($sqlDetalle);
+            foreach($platos as $plato){
+
+                $sqlBackupPlato = "INSERT INTO compra_backup_detalle
+                               (backup_id,tipo,entidad_id,costo_receta_anterior)
+                               VALUES (:backup,'plato',:id,:costo)";
+
+                $stmt = $this->db->prepare($sqlBackupPlato);
                 $stmt->execute([
-                    ':compra' => $compra_id,
-                    ':insumo' => $item['id'],
-                    ':cantidad' => $item['cantidad'],
-                    ':unidad' => $item['unidad'],
-                    ':precio' => $item['precio']
-                ]);
-
-                // convertir unidad
-                //$cantidadBase = $this->convertirAUnidadBase($item['cantidad'], $item['unidad']);
-                if ($item['unidad'] != 'un') {
-                    $cantidadBase = self::convertirAGramos($item['cantidad'], $item['unidad']);
-                } else {
-                    $cantidadBase = $item['cantidad'];
-                }
-                // stock
-                $sqlStock = "UPDATE insumo
-                         SET stock = stock + :cantidad
-                         WHERE id = :id";
-                $stmt = $this->db->prepare($sqlStock);
-                $stmt->execute([
-                    ':cantidad' => $cantidadBase,
-                    ':id' => $item['id']
+                    ':backup'=>$backup_id,
+                    ':id'=>$plato['id'],
+                    ':costo'=>$plato['costo_receta']
                 ]);
             }
 
-            $this->db->commit();
+            // ===============================
+            // DETALLE COMPRA
+            // ===============================
 
-        } catch (Exception $e) {
-            $this->db->rollBack();
-            throw $e;
+            $sqlDetalle = "INSERT INTO compras_detalle
+                      (compra_id, insumo_id, cantidad, unidad_medida, precio_unitario)
+                       VALUES (:compra, :insumo, :cantidad, :unidad, :precio)";
+            $stmt = $this->db->prepare($sqlDetalle);
+            $stmt->execute([
+                ':compra' => $compra_id,
+                ':insumo' => $item['id'],
+                ':cantidad' => $item['cantidad'],
+                ':unidad' => $item['unidad'],
+                ':precio' => $item['precio']
+            ]);
+
+            // convertir unidad
+            if ($item['unidad'] != 'un') {
+                $cantidadBase = self::convertirAGramos($item['cantidad'], $item['unidad']);
+            } else {
+                $cantidadBase = $item['cantidad'];
+            }
+
+            // stock
+            $sqlStock = "UPDATE insumo
+                     SET stock = stock + :cantidad
+                     WHERE id = :id";
+            $stmt = $this->db->prepare($sqlStock);
+            $stmt->execute([
+                ':cantidad' => $cantidadBase,
+                ':id' => $item['id']
+            ]);
+
+            // calcular precio unitario
+            $precioUnitario = $item['precio'] / $cantidadBase;
+
+            $sqlPrecio = "UPDATE insumo
+              SET precio_unitario = :precio
+              WHERE id = :id";
+
+            $stmt = $this->db->prepare($sqlPrecio);
+            $stmt->execute([
+                ':precio' => $precioUnitario,
+                ':id' => $item['id']
+            ]);
+
+            // recalculo precio plato
+
+            $sqlPrecioPlato = ("UPDATE plato
+            SET costo_receta = (
+            SELECT SUM(
+            (rendimiento.cantidad_usada / rendimiento.rendimiento) 
+            * insumo.precio_unitario
+            )
+            FROM rendimiento
+            INNER JOIN insumo
+            ON rendimiento.insumo = insumo.id
+            WHERE rendimiento.plato = plato.id
+            )
+            WHERE plato.id IN (
+            SELECT rendimiento.plato
+            FROM rendimiento    
+            WHERE rendimiento.insumo = :insumo
+            );");
+
+            $stmt = $this->db->prepare($sqlPrecioPlato);
+            $stmt->execute([
+                ':insumo' => $item['id']
+            ]);
+
         }
+
+        $this->db->commit();
+
+        $this->actualizarTablaPrecios();
+
+    } catch (Exception $e) {
+
+        $this->db->rollBack();
+        throw $e;
+
+    }
+}
+
+    public function actualizarTablaPrecios()
+    {
+        $sql = "UPDATE plato
+            SET precio_venta = costo_receta + (costo_receta * (margen / 100)),
+                ganancia = (costo_receta + (costo_receta * (margen / 100))) - costo_receta";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(); // Ejecuta y devuelve true/false
     }
 
+    
     private static function convertirAGramos($cantidad, $unidad)
     {
         $unidad = strtolower(trim($unidad));
@@ -229,22 +346,125 @@ class StockModel
     }
 
 
-    public function eliminarCompra(int $compra_id): void
-    {
-        // Primero borrar detalles
+   public function eliminarCompra(int $compra_id): void
+{
+    try {
+
+        $this->db->beginTransaction();
+
+        // =============================
+        // OBTENER FECHA DE LA COMPRA
+        // =============================
+
+        $sqlFecha = "SELECT fecha FROM compras WHERE id = :id";
+        $stmtFecha = $this->db->prepare($sqlFecha);
+        $stmtFecha->execute([':id'=>$compra_id]);
+
+        $compra = $stmtFecha->fetch(PDO::FETCH_ASSOC);
+
+        if(!$compra){
+            throw new Exception("La compra no existe.");
+        }
+
+        $fechaCompra = date('Y-m-d', strtotime($compra['fecha']));
+        $hoy = date('Y-m-d');
+
+        // =============================
+        // SI ES EL MISMO DIA RESTAURAR
+        // =============================
+
+        if($fechaCompra === $hoy){
+
+            // buscar backup
+            $sqlBackup = "SELECT id FROM compra_backup WHERE compra_id = :compra";
+            $stmtBackup = $this->db->prepare($sqlBackup);
+            $stmtBackup->execute([':compra'=>$compra_id]);
+
+            $backup = $stmtBackup->fetch(PDO::FETCH_ASSOC);
+
+            if($backup){
+
+                $backup_id = $backup['id'];
+
+                $sqlDatos = "SELECT * FROM compra_backup_detalle WHERE backup_id = :backup";
+                $stmtDatos = $this->db->prepare($sqlDatos);
+                $stmtDatos->execute([':backup'=>$backup_id]);
+
+                $registros = $stmtDatos->fetchAll(PDO::FETCH_ASSOC);
+
+                foreach($registros as $r){
+
+                    // RESTAURAR INSUMOS
+                    if($r['tipo'] === 'insumo'){
+
+                        $sqlRestore = "UPDATE insumo
+                        SET stock = :stock,
+                        precio_unitario = :precio
+                        WHERE id = :id";
+
+                        $stmt = $this->db->prepare($sqlRestore);
+                        $stmt->execute([
+                            ':stock'=>$r['stock_anterior'],
+                            ':precio'=>$r['precio_unitario_anterior'],
+                            ':id'=>$r['entidad_id']
+                        ]);
+                    }
+
+                    // RESTAURAR PLATOS
+                    if($r['tipo'] === 'plato'){
+
+                        $sqlRestore = "UPDATE plato
+                        SET costo_receta = :costo
+                        WHERE id = :id";
+
+                        $stmt = $this->db->prepare($sqlRestore);
+                        $stmt->execute([
+                            ':costo'=>$r['costo_receta_anterior'],
+                            ':id'=>$r['entidad_id']
+                        ]);
+                    }
+
+                }
+
+            }
+
+        }
+
+        // =============================
+        // BORRAR DETALLE
+        // =============================
+
         $sqlDetalle = "DELETE FROM compras_detalle WHERE compra_id = :id";
         $stmtDetalle = $this->db->prepare($sqlDetalle);
-        $stmtDetalle->execute([':id' => $compra_id]);
+        $stmtDetalle->execute([':id'=>$compra_id]);
 
-        // Luego borrar la compra
+        // =============================
+        // BORRAR COMPRA
+        // =============================
+
         $sqlCompra = "DELETE FROM compras WHERE id = :id";
         $stmtCompra = $this->db->prepare($sqlCompra);
-        $stmtCompra->execute([':id' => $compra_id]);
+        $stmtCompra->execute([':id'=>$compra_id]);
 
         if ($stmtCompra->rowCount() === 0) {
             throw new Exception("La compra no existe o ya fue eliminada.");
         }
+
+        $this->db->commit();
+
+        // =============================
+        // RECALCULAR PRECIOS
+        // =============================
+
+        $this->actualizarTablaPrecios();
+
+    } catch (Exception $e) {
+
+        $this->db->rollBack();
+        throw $e;
+
     }
+}
 
     public function actualizarLimites($id, $minimo, $unidad)
     {
@@ -332,11 +552,11 @@ class StockModel
     }
 
     public static function obtenerUltimaCompra()
-{
+    {
 
-    $db = Database::connect();
+        $db = Database::connect();
 
-    $sql = "
+        $sql = "
     SELECT 
         c.fecha,
         c.id,
@@ -358,25 +578,25 @@ class StockModel
         LIMIT 1
     )";
 
-    $stmt = $db->query($sql);
+        $stmt = $db->query($sql);
 
-    $compras = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $compras = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    foreach ($compras as &$c) {
+        foreach ($compras as &$c) {
 
-        $cantidadBase = $c['cantidad'];
+            $cantidadBase = $c['cantidad'];
 
-        if ($c['unidad_medida'] != 'un') {
-            $cantidadBase = self::convertirAGramos($c['cantidad'], $c['unidad_medida']);
+            if ($c['unidad_medida'] != 'un') {
+                $cantidadBase = self::convertirAGramos($c['cantidad'], $c['unidad_medida']);
+            }
+
+            $c['rendimientos'] = self::calcularRendimiento(
+                $c['insumo_id'],
+                $cantidadBase
+            );
         }
 
-        $c['rendimientos'] = self::calcularRendimiento(
-            $c['insumo_id'],
-            $cantidadBase
-        );
+        return $compras;
     }
-
-    return $compras;
-}
 }
 
