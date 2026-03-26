@@ -15,6 +15,8 @@ class StockModel
 
   public function guardarCompraCompleta($data)
 {
+
+//Nota: se hacen backups para llenar los datos en la tabla temporal en la bd,de ese modo podemos volver atras si se borra la compra.
     try {
 
         $this->db->beginTransaction();
@@ -192,40 +194,66 @@ class StockModel
     }
 
     
-    private static function convertirAGramos($cantidad, $unidad)
-    {
-        $unidad = strtolower(trim($unidad));
+private static function convertirAGramos($cantidad, $unidad)
+{
+    $unidad = strtolower(trim($unidad));
 
-        if ($unidad == 'kg' || $unidad == 'kilo' || $unidad == 'kilos') {
-            return $cantidad * 1000;
-        }
-
-        if ($unidad == 'gr' || $unidad == 'gramo' || $unidad == 'gramos') {
-            return $cantidad;
-        }
-
-        throw new Exception("Unidad de medida no válida: " . $unidad);
+    // --- PESO ---
+    if ($unidad == 'kg' || $unidad == 'kilo' || $unidad == 'kilos') {
+        return $cantidad * 1000; // 1 kg = 1000 gr
     }
 
+    if ($unidad == 'gr' || $unidad == 'gramo' || $unidad == 'gramos') {
+        return $cantidad; // ya está en gramos
+    }
 
-    private static function mostrarPeso($gramos)
-    {
-        if ($gramos >= 1000) {
+    // --- VOLUMEN ---
+    if ($unidad == 'lt' || $unidad == 'l' || $unidad == 'litro' || $unidad == 'litros') {
+        return $cantidad * 1000; // 1 litro = 1000 ml
+    }
 
-            $kg = $gramos / 1000;
+    if ($unidad == 'ml' || $unidad == 'mililitro' || $unidad == 'mililitros') {
+        return $cantidad; // ya está en mililitros
+    }
 
-            // Si es entero → sin decimales
+    throw new Exception("Unidad de medida no válida: " . $unidad);
+}
+
+
+private static function mostrarPeso($valor, $unidad = 'gramos')
+{
+    $unidad = strtolower(trim($unidad));
+
+    if ($unidad === 'gramos') {
+        if (abs($valor) >= 1000) {   // usamos abs() para decidir
+            $kg = $valor / 1000;     // mantenemos el signo
+
             if ($kg == floor($kg)) {
                 return number_format($kg, 0, ',', '.') . " kg";
             }
 
-            // Si tiene decimales → mostrar 3
             return number_format($kg, 3, ',', '.') . " kg";
         }
 
-        return number_format($gramos, 0, ',', '.') . " gr";
+        return number_format($valor, 0, ',', '.') . " gr";
     }
 
+    if ($unidad === 'ml') {
+        if (abs($valor) >= 1000) {
+            $litros = $valor / 1000;
+
+            if ($litros == floor($litros)) {
+                return number_format($litros, 0, ',', '.') . " lt";
+            }
+
+            return number_format($litros, 3, ',', '.') . " lt";
+        }
+
+        return number_format($valor, 0, ',', '.') . " ml";
+    }
+
+    return $valor . " " . $unidad;
+}
     private static function calcularRendimiento($insumo, $stock)
     {
         $db = Database::connect();
@@ -284,11 +312,15 @@ class StockModel
         $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach ($datos as &$insumo) {
             $excepciones = ['un', 'unidad'];
+            $volumen = ['ml','lt'];
 
             if (!in_array(strtolower($insumo['unidad_medida']), $excepciones)) {
                 // formatea gramos/kilos
+                 if (in_array(strtolower($insumo['unidad_medida']), $volumen)) {
+                $insumo['stock_formateado'] = self::mostrarPeso($insumo['stock'],$insumo['unidad_medida']);
+                 }else{
                 $insumo['stock_formateado'] = self::mostrarPeso($insumo['stock']);
-
+                 }
                 // NUEVA COLUMNA -> rendimiento real
                 $insumo['rendimientos'] = self::calcularRendimiento(
                     $insumo['id'],
@@ -496,7 +528,7 @@ class StockModel
     public function actualizarLimitesYStock($id, $stock, $unidad)
     {
 
-        $excepciones = ['un', 'unidad', 'Un'];
+       // $excepciones = ['un', 'unidad', 'Un'];
 
         // if (!in_array($unidad, $excepciones)) {
 

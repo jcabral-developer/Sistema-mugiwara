@@ -22,6 +22,7 @@
                         const celdaTotal = document.getElementById("costo_total");
 
                         tbody.innerHTML = "";
+
                         let total = 0;
 
                         data.forEach(i => {
@@ -35,7 +36,7 @@
                     `;
                         });
 
-                        celdaTotal.innerText = "$" + Math.round(total);
+                 celdaTotal.innerText = "$" + total;
                         celdaTotal.dataset.total = total;
 
                         // Ejecutamos el cálculo para que el precio sugerido se actualice con el margen que acabamos de heredar
@@ -146,7 +147,7 @@
             const precioFinal = costoFijo + (costoFijo * (margen / 100));
             const ganancia = precioFinal - costoFijo;
 
-            sugeridoElement.innerText = `$${precioFinal}`;
+            sugeridoElement.innerText = `$${Math.ceil(precioFinal)}`;
             gananciaElement.innerText = `$${Math.round(ganancia)}`;
 
             if (margen < 30) {

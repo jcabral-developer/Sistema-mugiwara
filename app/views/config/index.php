@@ -114,7 +114,8 @@
                                     <option value="gr">Gramos</option>
                                     <option value="kg">kilos</option>
                                     <option value="un">unidad</option>
-                                    <option value="LT">Litros</option>
+                            
+                                    <option value="ml">Mililitros</option>
                                 </select>
                             </div>
                         </div>
@@ -150,8 +151,9 @@
                              <label>unidad de medida</label>
                             <select name="unidad_medida" id="unidad_medida">
                                         <option value="un">Unidad</option>
-                                        <option value="gr">Gramos</option>
-                                          <option value="LT">Litros</option>
+                                        <option value="gr">Gramos(Kilos)</option>
+                                         
+                                          <option value="ml">Mililitros</option>
                             </select>
                         </div>
 

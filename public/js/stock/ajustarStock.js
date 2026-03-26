@@ -69,16 +69,7 @@ else{
 
 }
 
-//let selectUnidad = document.getElementById('unidad_limite');
 
-   // document.getElementById('ajusteMinimo').value = minimo;
-//    if (unidad_medida === 'gr') {
-//     selectUnidad.value = 'gr';
-// } else if (unidad_medida === 'kg') {
-//     selectUnidad.value = 'kg';
-// } else if (unidad_medida === 'un') {
-//     selectUnidad.value = 'un';
-// }
  document.getElementById('ajusteTitulo2').innerText = "⚙️ CONFIGURAR LIMITE: " + nombre;
     document.getElementById('modalAjusteLimite').style.display = 'flex';
 }
@@ -98,30 +89,23 @@ document.getElementById('formAjusteStock').addEventListener('submit', function(e
     let gr = parseFloat(document.getElementById("stock_gr").value) || 0;
     const unidad = document.getElementById('unidad').value;
 
-
     let nuevoStock = 0;
-   
 
-    if(unidad != 'un')
-    {
-         nuevoStock = (kg * 1000) + gr;
+    if (unidad != 'un') {
+        nuevoStock = (kg * 1000) + gr;
         document.getElementById("ajusteStock").value = nuevoStock;
-       
-    }else{
-        nuevoStock = kg;// <---- Acá le paso a la variable nuevoStock lo que tiene la variable kg que a su vez contiene lo que el usuario ingreso en el primer input,ya que seguramente es por ingreso de cantidad del insumo en unidades o litros.
- 
+    } else {
+        // Si es unidad/litro, usamos el primer input directamente
+        nuevoStock = kg;
     }
-
-   
 
     const data = {
         id: id,
         stock: nuevoStock,
-        //minimo: total_limite,
         uni: unidad
-        //uni_limit: unidad_limite
     };
 
+    // Lanzamos la petición
     fetch(BASE_URL + "/index.php?route=stock/actualizarLimitesYStock", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -129,89 +113,97 @@ document.getElementById('formAjusteStock').addEventListener('submit', function(e
     })
     .then(res => res.json())
     .then(res => {
-        if(res.ok) {
-            
-            cerrarAjuste();
-            
-        location.reload();
-
-          const contenedorMensajes = document.querySelector("#listado #mensajes");
-            contenedorMensajes.innerHTML = `
-                <div class="alert alert-success alert-dismissible fade show" role="alert" style="border: 2px solid black; font-weight: bold;">
-                    ⚓ ¡LIMITE Y STOCK ACTUALIZADO! ${res.mensaje}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            `;
-
-
+        if (res.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Stock Actualizado!',
+                text: '⚓ ' + (res.mensaje || 'Los cambios se guardaron correctamente.'),
+                confirmButtonColor: '#28a745',
+                confirmButtonText: 'Excelente'
+            }).then((result) => {
+                // Cerramos el modal y recargamos la página al dar OK
+                if (typeof cerrarAjuste === "function") cerrarAjuste();
+                location.reload();
+            });
         } else {
-            alert("❌ Error: " + res.mensaje);
+            Swal.fire({
+                icon: 'error',
+                title: 'No se pudo actualizar',
+                text: '❌ ' + res.mensaje,
+                confirmButtonColor: '#d33'
+            });
         }
     })
-    .catch(error => console.error("Error:", error));
+    .catch(error => {
+        console.error("Error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'Hubo un problema al comunicarse con el servidor.'
+        });
+    });
 });
-
 // *************************************************************
-
 document.getElementById('modalAjusteLimite').addEventListener('submit', function(e) {
     e.preventDefault();
 
+    const id = document.getElementById('ajusteId').value;
+    const unidad_limite = document.getElementById('unidad_limite').value;
+    let kg_limite = parseFloat(document.getElementById("limite_kg").value) || 0;
+    let gr_limite = parseFloat(document.getElementById("limite_gr").value) || 0;
 
- const id = document.getElementById('ajusteId').value;
-  const unidad_limite = document.getElementById('unidad_limite').value;
-  let kg_limite = parseFloat(document.getElementById("limite_kg").value) || 0;
-  let gr_limite = parseFloat(document.getElementById("limite_gr").value) || 0;
+    let total_limite = 0;
 
- let total_limite = 0;
+    if (unidad_limite != 'un') {
+        total_limite = (kg_limite * 1000) + gr_limite;
+        document.getElementById("ajusteMinimo").value = total_limite;
+    } else {
+        total_limite = kg_limite;
+    }
 
-
-   if(unidad_limite != 'un')
-     {
-             total_limite = (kg_limite * 1000) + gr_limite;
-             document.getElementById("ajusteMinimo").value = total_limite;
-     }else{
-         total_limite = kg_limite;// <---- Acá le paso a la variable total_limite lo que tiene la variable kg_limite que a su vez contiene lo que el usuario ingreso en el primer input,ya que seguramente es por ingreso de cantidad del insumo en unidades o litros.
-     }
-
-
-const data = {
+    const data = {
         id: id,
         minimo: total_limite,
         uni_limit: unidad_limite
     };
 
-  fetch(BASE_URL + "/index.php?route=stock/actualizarLimites", {
+    fetch(BASE_URL + "/index.php?route=stock/actualizarLimites", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
     .then(res => res.json())
     .then(res => {
-        if(res.ok) {
-            
-            cerrarAjuste();
-            
-        location.reload();
-
-          const contenedorMensajes = document.querySelector("#listado #mensajes");
-            contenedorMensajes.innerHTML = `
-                <div class="alert alert-success alert-dismissible fade show" role="alert" style="border: 2px solid black; font-weight: bold;">
-                    ⚓ ¡LIMITE Y STOCK ACTUALIZADO! ${res.mensaje}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            `;
-
-
+        if (res.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Actualizado!',
+                text: '⚓ ' + res.mensaje,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                // Cerramos el modal y recargamos la página al confirmar
+                if (typeof cerrarAjuste === "function") cerrarAjuste();
+                location.reload();
+            });
         } else {
-            alert("❌ Error: " + res.mensaje);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '❌ ' + res.mensaje,
+                confirmButtonColor: '#d33'
+            });
         }
     })
-    .catch(error => console.error("Error:", error));
+    .catch(error => {
+        console.error("Error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de red',
+            text: 'No se pudo conectar con el servidor.'
+        });
+    });
 });
-
-
-
-
 
 /**
  * Función para actualizar visualmente la fila de la tabla

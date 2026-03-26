@@ -31,23 +31,42 @@ Class RendimientoModel{
     return $datos;
 }
 
-private static function mostrarPeso($gramos)
-    {
-        if ($gramos >= 1000) {
+private static function mostrarPeso($valor, $unidad = 'gramos')
+{
+    // Normalizamos la unidad para evitar errores
+    $unidad = strtolower($unidad);
 
-            $kg = $gramos / 1000;
+    if ($unidad === 'gramos') {
+        if ($valor >= 1000) {
+            $kg = $valor / 1000;
 
-            // Si es entero → sin decimales
             if ($kg == floor($kg)) {
                 return number_format($kg, 0, ',', '.') . " kg";
             }
 
-            // Si tiene decimales → mostrar 3
             return number_format($kg, 3, ',', '.') . " kg";
         }
 
-        return number_format($gramos, 0, ',', '.') . " gr";
+        return number_format($valor, 0, ',', '.') . " gr";
     }
+
+    if ($unidad === 'mililitros') {
+        if ($valor >= 1000) {
+            $litros = $valor / 1000;
+
+            if ($litros == floor($litros)) {
+                return number_format($litros, 0, ',', '.') . " l";
+            }
+
+            return number_format($litros, 3, ',', '.') . " l";
+        }
+
+        return number_format($valor, 0, ',', '.') . " ml";
+    }
+
+    // Si se pasa una unidad desconocida
+    return $valor . " " . $unidad;
+}
 
 
 

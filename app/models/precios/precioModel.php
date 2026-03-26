@@ -10,28 +10,51 @@ class PrecioModel
         $this->db = Database::connect();
     }
 
-    public function obtenerPlatos()
-    {
-        try {
-            $sql = "SELECT id, descripcion, costo_receta, margen, precio_venta, ganancia,imagen
-                FROM plato";
+public function obtenerPlatos()
+{
+    try {
+        $sql = "SELECT 
+                    plato.id,
+                    plato.descripcion,
+                    plato.costo_receta,
+                    plato.margen,
+                    plato.precio_venta,
+                    plato.ganancia,
+                    plato.imagen,
 
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
+                    compra_backup_detalle.costo_receta_anterior,
 
-            $platos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    (plato.costo_receta - IFNULL(compra_backup_detalle.costo_receta_anterior, plato.costo_receta)) AS diferencia,
 
-            // foreach ($platos as &$plato) {
-            //     $plato['reporte'] = $this->obtenerImpactoPlato($plato['id']);
-            // }
+                    CASE 
+                        WHEN compra_backup_detalle.costo_receta_anterior IS NULL THEN 'igual'
+                        WHEN plato.costo_receta > compra_backup_detalle.costo_receta_anterior THEN 'subio'
+                        WHEN plato.costo_receta < compra_backup_detalle.costo_receta_anterior THEN 'bajo'
+                        ELSE 'igual'
+                    END AS variacion
 
-            return $platos;
+                FROM plato
 
-        } catch (PDOException $e) {
-            error_log("Error en obtenerPlatos: " . $e->getMessage());
-            return [];
-        }
+                LEFT JOIN compra_backup_detalle
+                ON compra_backup_detalle.entidad_id = plato.id
+                AND compra_backup_detalle.tipo = 'plato'
+                AND compra_backup_detalle.id = (
+                    SELECT MAX(id)
+                    FROM compra_backup_detalle
+                    WHERE entidad_id = plato.id
+                    AND tipo = 'plato'
+                )";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        error_log("Error en obtenerPlatos: " . $e->getMessage());
+        return [];
     }
+}
 
     public function obtenerImpactoPlato($plato_id)
     {

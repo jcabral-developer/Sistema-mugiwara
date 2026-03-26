@@ -292,6 +292,11 @@
                                                     onclick="editarLimite(<?= $stocks['id'] ?>, '<?= htmlspecialchars($stocks['descripcion']) ?>', <?= $stocks['stock_minimo'] ?? 0 ?>, '<?= htmlspecialchars($stocks['unidad_medida']) ?>')">
                                                     ⚠️ Editar Mínimo
                                                 </button>
+
+                                                <button class="btn btn-outline-danger btn-sm shadow-sm fw-bold"
+                                                    onclick="editarLimite(<?= $stocks['id'] ?>, '<?= htmlspecialchars($stocks['descripcion']) ?>', <?= $stocks['stock_minimo'] ?? 0 ?>, '<?= htmlspecialchars($stocks['unidad_medida']) ?>')">
+                                                    ⚠️ Dar de baja
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -454,6 +459,8 @@
                             <option value="kg">kg</option>
                             <option value="gr">gr</option>
                             <option value="un">un</option>
+                             <option value="lt">lt</option>
+                              <option value="ml">ml</option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -559,11 +566,11 @@
                     <label>📦 STOCK ACTUAL</label>
 
                     <div style="display:flex; gap:10px;">
-                        <label>KILOS: </label>
+                        <label>kilos,unidades o litros: </label>
 
                         <input type="number" step="1" min="0" id="stock_kg" class="form-control-mugiwara"
                             placeholder="Kg">
-                        <label>GRAMOS: </label>
+                        <label>Gramos o mililitros: </label>
                         <input type="number" step="1" min="0" max="999" id="stock_gr" class="form-control-mugiwara"
                             placeholder="Gr">
                     </div>
@@ -587,6 +594,8 @@
                         <option value="gr">Gramos</option>
                         <option value="kg">Kilos</option>
                         <option value="un">Unidad</option>
+                        <option value="ml">Mililitros</option>
+                        
                     </select>
 
                     <small class="text-muted">
@@ -635,11 +644,11 @@
                     <div style="display:flex; gap:10px;">
 
 
-                        <label>KILOS: </label>
+                        <label>kilos,unidades o litros </label><br>
                         <input type="number" step="1" min="0" id="limite_kg" class="form-control-mugiwara"
                             placeholder="Kg">
 
-                        <label>GRAMOS: </label>
+                        <label>Gramos o mililitros: </label>
                         <!-- <input type="text" id="prueba"> -->
                         <input type="number" step="1" min="0" max="999" id="limite_gr" class="form-control-mugiwara"
                             placeholder="Gr">
@@ -663,6 +672,7 @@
                         <option value="gr">Gramos</option>
                         <option value="kg">Kilos</option>
                         <option value="un">Unidad</option>
+                          <option value="ml">Mililitros</option>
                     </select>
                     <small class="text-muted">
                         Seleccionar la unidad de medida, ejemplos:<br>

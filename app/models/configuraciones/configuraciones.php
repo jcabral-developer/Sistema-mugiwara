@@ -129,20 +129,30 @@ class Configuraciones
     }
 
 
-    private function convertirAGramos($cantidad, $unidad)
-    {
-        $unidad = strtolower(string: trim($unidad));
+ private function convertirAGramos($cantidad, $unidad)
+{
+    $unidad = strtolower(trim($unidad));
 
-        if ($unidad == 'kg' || $unidad == 'kilo' || $unidad == 'kilos') {
-            return $cantidad * 1000;
-        }
-
-        if ($unidad == 'gr' || $unidad == 'gramo' || $unidad == 'gramos') {
-            return $cantidad;
-        }
-
-        throw new Exception("Unidad de medida no válida: " . $unidad);
+    // --- PESO ---
+    if ($unidad == 'kg' || $unidad == 'kilo' || $unidad == 'kilos') {
+        return $cantidad * 1000; // 1 kg = 1000 gr
     }
+
+    if ($unidad == 'gr' || $unidad == 'gramo' || $unidad == 'gramos') {
+        return $cantidad; // ya está en gramos
+    }
+
+    // --- VOLUMEN ---
+    if ($unidad == 'lt' || $unidad == 'l' || $unidad == 'litro' || $unidad == 'litros') {
+        return $cantidad * 1000; // 1 litro = 1000 ml
+    }
+
+    if ($unidad == 'ml' || $unidad == 'mililitro' || $unidad == 'mililitros') {
+        return $cantidad; // ya está en mililitros
+    }
+
+    throw new Exception("Unidad de medida no válida: " . $unidad);
+}
 
     /***************************************************************************
      * <2>. eliminar

@@ -233,3 +233,53 @@
             border: 1px solid #000;
             pointer-events: none;
         }
+
+
+        /* mensaje de costo */
+
+/* 1. Estilos para los Badges de Variación */
+.badge-variacion {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Color para cuando SUBE el precio (Alerta) */
+.badge-variacion.subio {
+    background-color: #ffebee !important;
+    color: #d32f2f !important;
+}
+
+/* Color para cuando BAJA el precio (Éxito) */
+.badge-variacion.bajo {
+    background-color: #e8f5e9 !important;
+    color: #2e7d32 !important;
+}
+
+/* 2. La Animación - Aplicada específicamente al icono de la flecha roja */
+.badge-variacion.subio i {
+    display: inline-block; /* Importante para que la transformación funcione */
+    animation: bounceUp 1.5s infinite;
+}
+
+@keyframes bounceUp {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-4px); /* Sube 4 pixeles */
+    }
+}
+
+/* 3. Asegurar que el contenedor de costo esté centrado */
+.text-costo .d-flex {
+    justify-content: center;
+    align-items: center;
+}
