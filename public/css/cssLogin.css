@@ -225,3 +225,29 @@ clip-path: ellipse(80% 80% at 80% 50%);
     display: block;
     color: #2c1e14;
 }
+
+/* ===== ESTILO DE VERSIÓN MUGIWARA ===== */
+.footer-version-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.badge-version {
+    background: #2f3542; /* Gris oscuro industrial */
+    color: var(--gold);  /* El dorado que ya definiste en el root */
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    border: 2px solid #000;
+    font-family: 'Bangers', cursive; /* Fuente anime */
+    letter-spacing: 1px;
+    box-shadow: 3px 3px 0px #000; /* Sombra sólida tipo sticker */
+    text-transform: uppercase;
+    transition: transform 0.2s;
+}
+
+.badge-version:hover {
+    transform: scale(1.05);
+}

@@ -14,7 +14,8 @@
     <!-- Tu CSS Personalizado -->
     <link rel="stylesheet" href="/Sistema_mugiwara/public/css/cssPrecios.css">
     <!-- Favicon (Corregido) -->
-    <link rel="icon" type="image/x-icon" href="/Sistema_mugiwara/public/img/Gemini_Generated_Image_b3vr0wb3vr0wb3vr-removebg-preview.png" />
+    <link rel="icon" type="image/x-icon"
+        href="/Sistema_mugiwara/public/img/Gemini_Generated_Image_b3vr0wb3vr0wb3vr-removebg-preview.png" />
 </head>
 
 <body>
@@ -27,14 +28,23 @@
             <a href="index.php?route=" class="logo">MUGIWARA</a>
         </div>
         <div class="menu">
+
             <div onclick="cambiar('pedidos')">⚔️ Pedidos</div>
-            <div onclick="cambiar('stock')">
-                🍖 Stock <span class="badge"><?php echo $bajoStock ? 'Bajo' : ''; ?></span>
+
+            <div onclick="cambiar('promos')">🔖 Promos</div>
+
+            <div onclick="cambiar('stock')">🍖 Stock <span class="badge"><?php echo $bajoStock ? 'Bajo' : ''; ?></span>
             </div>
+
             <div onclick="cambiar('precios')">🍳 Precios</div>
+
             <div onclick="cambiar('caja')">💰 Ganancias</div>
+
             <div onclick="cambiar('reportes')">📜 Reportes</div>
+
             <div onclick="cambiar('config')">🛠️ Config</div>
+
+
         </div>
     </div>
 
@@ -88,34 +98,98 @@
                                     </div>
                                     <span class="fw-bold fs-5 text-dark"><?php echo ucfirst($p['descripcion']); ?></span>
                                 </td>
-                                <td class="text-costo">
-                                    <div class="d-flex flex-column align-items-start">
-                                        <span class=" fs-6">$<?php echo $p['costo_receta']; ?></span>
-                                        
-                                        <?php 
-                                        $variacion = $p['variacion'];
-                                        $diferencia = round($p['diferencia'], 2);
-                                        ?>
+                                <td class="text-costo fw-bold">
+                                    <?php
+                                    $variacion = 'igual';
+                                    $diferencia = 0;
 
+                                    $costoActual = $p['costo_receta'];
+                                    $costoAnterior = $p['costo_receta_anterior'] ?? $costoActual;
+
+                                    $diferencia = abs($costoActual - $costoAnterior);
+
+                                    if ($costoActual > $costoAnterior) {
+                                        $variacion = 'subio';
+                                    } elseif ($costoActual < $costoAnterior) {
+                                        $variacion = 'bajo';
+                                    }
+                                    ?>
+
+                                    <div class="d-flex align-items-center gap-2">
+
+                                        <!-- PRECIO -->
+                                        <span class="text-costo fw-bold">$<?php echo number_format($costoActual, 2, ',', '.'); ?></span>
+
+                                        <!-- FLECHA INLINE -->
                                         <?php if ($variacion == 'subio'): ?>
-                                            <small class="badge-variacion subio" title="El costo aumentó desde la ultima compra">
-                                                <i class="fas fa-arrow-up"></i> $<?php echo $diferencia; ?>
+                                            <small class="badge-variacion subio"
+                                                title="El costo aumentó desde la última compra">
+                                                <i class="fas fa-arrow-up"></i> $<?php echo number_format($diferencia, 2, ',', '.'); ?>
                                             </small>
+
                                         <?php elseif ($variacion == 'bajo'): ?>
-                                            <small class="badge-variacion bajo" title="El costo bajó desde la ultima compra">
-                                                <i class="fas fa-arrow-down"></i> $<?php echo $diferencia; ?>
+                                            <small class="badge-variacion bajo" title="El costo bajó desde la última compra">
+                                                <i class="fas fa-arrow-down"></i> $<?php echo number_format($diferencia, 2, ',', '.');  ?>
                                             </small>
                                         <?php endif; ?>
+
                                     </div>
                                 </td>
                                 <td class="text-margen fw-bold">
                                     <?php echo $p['margen']; ?>%
                                 </td>
                                 <td class="text-precio">
-                                    <strong>$<?php echo $p['precio_venta']; ?></strong>
+                                    <strong>$<?php echo number_format($p['precio_venta'], 2, ',', '.'); ?></strong>
                                 </td>
                                 <td class="text-ganancia fw-bold">
-                                    $<?php echo $p['ganancia']; ?>
+
+                                    <?php
+                                    $gananciaActual = $p['ganancia'];
+                                    $gananciaAnterior = $p['ganancia_anterior'] ?? $gananciaActual;
+
+                                    $diferenciaGanancia = $gananciaActual - $gananciaAnterior;
+                                    $absDiff = abs($diferenciaGanancia);
+
+                                    $estilo = '';
+                                    $mensaje = '';
+                                    $icono = '';
+
+                                    if ($gananciaActual > $gananciaAnterior) {
+
+                                        //  SUBE GANANCIA
+                                        $estilo = 'badge-variacion subio';
+                                        $icono = 'fa-arrow-up';
+
+                                        if ($p['costo_receta'] < ($p['costo_receta_anterior'] ?? $p['costo_receta'])) {
+                                            $mensaje = 'La ganancia aumentó porque bajó el costo';
+                                        } else {
+                                            $mensaje = 'La ganancia aumentó por ajuste de precio';
+                                        }
+
+                                    } elseif ($gananciaActual < $gananciaAnterior) {
+
+                                        //  BAJA GANANCIA (raro pero posible)
+                                        $estilo = 'badge-variacion bajo';
+                                        $icono = 'fa-arrow-down';
+                                        $mensaje = 'La ganancia disminuyó';
+
+                                    } else {
+
+                                        // IGUAL
+                                        $estilo = '';
+                                        $mensaje = 'La ganancia se mantiene';
+                                    }
+                                    ?>
+
+                                    $<?php echo number_format($gananciaActual, 2, ',', '.'); ?>
+
+                                    <?php if ($gananciaActual != $gananciaAnterior): ?>
+                                        <small class="<?php echo $estilo; ?>" title="<?php echo $mensaje; ?>">
+                                            <i class="fas <?php echo $icono; ?>"></i>
+                                            $<?php echo number_format($absDiff, 2, ',', '.');?>
+                                        </small>
+                                    <?php endif; ?>
+
                                 </td>
                                 <td class="text-center">
                                     <button class="btn-config" data-bs-toggle="modal" data-bs-target="#modalEditor"
@@ -176,8 +250,8 @@
                                 <div class="mb-4">
                                     <label class="small fw-bold text-muted">PORCENTAJE DE MARGEN (%)</label>
                                     <input type="number" id="inputMargen"
-                                        class="form-control form-control-lg border-dark fw-bold text-center" 
-                                        value="100" oninput="calcularPrecio()">
+                                        class="form-control form-control-lg border-dark fw-bold text-center" value="100"
+                                        oninput="calcularPrecio()">
                                 </div>
                                 <hr class="border-dark">
                                 <div class="text-center p-2">
@@ -188,7 +262,8 @@
                                         <h4 class="text-ganancia m-0" id="gananciaVenta">$0</h4>
                                     </div>
                                 </div>
-                                <div class="alert alert-warning border-dark mt-3 p-2 small" id="alertaMargen" style="display:none;">
+                                <div class="alert alert-warning border-dark mt-3 p-2 small" id="alertaMargen"
+                                    style="display:none;">
                                     <strong>⚠ CUIDADO:</strong> Margen muy bajo.
                                 </div>
                                 <div class="d-grid gap-2 mt-auto pt-4">
@@ -215,4 +290,5 @@
     <script src="/Sistema_mugiwara/public/js/precios/subirImagen.js"></script>
 
 </body>
+
 </html>

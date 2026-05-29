@@ -38,7 +38,7 @@ body {
 
 /* Clase para aplicar a la imagen */
 .logo-animado {
-    display: inline-block; /* Asegura que la transformación funcione correctamente */
+    display: inline-block; 
     animation: flotar 3s ease-in-out infinite; /* 3 segundos, movimiento suave, bucle infinito */
 }
 .topbar {
@@ -97,7 +97,7 @@ body {
     font-weight: bold;
     transition: 0.3s;
     color: white;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
 }
 
 .menu div:hover {
@@ -110,6 +110,7 @@ body {
 /* ===== CONTENIDO ===== */
 .main {
     padding: 40px 20px;
+    overflow-y: auto;
 }
 
 .titulo-principal {

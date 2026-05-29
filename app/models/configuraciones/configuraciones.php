@@ -42,7 +42,7 @@ class Configuraciones
         $sql = "INSERT INTO insumo (stock, descripcion, unidad_medida, stock_minimo) VALUES (:stock, :nombre, :unidad_medida, :stock_minimo)";
         $stmt = $this->db->prepare($sql);
 
-        if (!$stmt->execute([':stock' => 0, ':nombre' => $nombre, ':unidad_medida' => $unidad,':stock_minimo'=> 0 ])) {
+        if (!$stmt->execute([':stock' => 0, ':nombre' => $nombre, ':unidad_medida' => $unidad, ':stock_minimo' => 0])) {
             throw new Exception("No se pudo registrar el insumo.");
         }
     }
@@ -50,6 +50,8 @@ class Configuraciones
 
     public function crearPlato(string $nombre): void
     {
+
+
         // Normalizar (clave para evitar duplicados raros)
         $nombre = mb_strtolower(trim($nombre));
 
@@ -62,11 +64,35 @@ class Configuraciones
         $sql = "INSERT INTO plato (descripcion) VALUES (:nombre)";
         $stmt = $this->db->prepare($sql);
 
+
+
         if (!$stmt->execute([':nombre' => $nombre])) {
             throw new Exception("No se pudo registrar el plato.");
         }
+
+        $this->registrarBackupPlato();
     }
 
+    public function registrarBackupPlato()
+    {
+
+
+        $sql2 = "INSERT INTO backup_precio_costo (plato_id, costo_receta, ganancia, fecha_actualizacion)
+        SELECT 
+            p.id,
+            p.costo_receta,
+            p.ganancia,
+            NOW()
+        FROM plato p
+        LEFT JOIN backup_precio_costo b 
+            ON b.plato_id = p.id
+        WHERE b.plato_id IS NULL";
+
+        $stmt = $this->db->prepare($sql2);
+        $stmt->execute();
+
+
+    }
 
     public function crearRendimiento(
         int $platoId,
@@ -93,7 +119,7 @@ class Configuraciones
         FROM rendimiento 
         WHERE plato = :plato 
           AND insumo = :insumo
-    ";
+        ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -105,6 +131,7 @@ class Configuraciones
             throw new Exception("Ya existe una regla de producción para este producto e insumo.");
         }
 
+        //  Conversión de unidades
         if ($unidad == 'gr' || $unidad == 'kg') {
             $cant = $this->convertirAGramos($cantidad, $unidad);
         } else {
@@ -126,33 +153,52 @@ class Configuraciones
             ':unidad' => $unidad,
             ':rendimiento' => $rendimiento
         ]);
+
+        //  RECALCULAR COSTO DEL PLATO AUTOMÁTICAMENTE (sin alias)
+        $sqlRecalcular = "
+        UPDATE plato
+        SET costo_receta = (
+            SELECT SUM(
+                (rendimiento.cantidad_usada / rendimiento.rendimiento) * insumo.precio_unitario
+            )
+            FROM rendimiento
+            INNER JOIN insumo ON rendimiento.insumo = insumo.id
+            WHERE rendimiento.plato = :plato_id_sub
+        )
+        WHERE id = :plato_id_main
+        ";
+
+        $stmt = $this->db->prepare($sqlRecalcular);
+        $stmt->execute([
+            ':plato_id_sub' => $platoId,
+            ':plato_id_main' => $platoId
+        ]);
     }
 
+    private function convertirAGramos($cantidad, $unidad)
+    {
+        $unidad = strtolower(trim($unidad));
 
- private function convertirAGramos($cantidad, $unidad)
-{
-    $unidad = strtolower(trim($unidad));
+        // --- PESO ---
+        if ($unidad == 'kg' || $unidad == 'kilo' || $unidad == 'kilos') {
+            return $cantidad * 1000; // 1 kg = 1000 gr
+        }
 
-    // --- PESO ---
-    if ($unidad == 'kg' || $unidad == 'kilo' || $unidad == 'kilos') {
-        return $cantidad * 1000; // 1 kg = 1000 gr
+        if ($unidad == 'gr' || $unidad == 'gramo' || $unidad == 'gramos') {
+            return $cantidad; // ya está en gramos
+        }
+
+        // --- VOLUMEN ---
+        if ($unidad == 'lt' || $unidad == 'l' || $unidad == 'litro' || $unidad == 'litros') {
+            return $cantidad * 1000; // 1 litro = 1000 ml
+        }
+
+        if ($unidad == 'ml' || $unidad == 'mililitro' || $unidad == 'mililitros') {
+            return $cantidad; // ya está en mililitros
+        }
+
+        throw new Exception("Unidad de medida no válida: " . $unidad);
     }
-
-    if ($unidad == 'gr' || $unidad == 'gramo' || $unidad == 'gramos') {
-        return $cantidad; // ya está en gramos
-    }
-
-    // --- VOLUMEN ---
-    if ($unidad == 'lt' || $unidad == 'l' || $unidad == 'litro' || $unidad == 'litros') {
-        return $cantidad * 1000; // 1 litro = 1000 ml
-    }
-
-    if ($unidad == 'ml' || $unidad == 'mililitro' || $unidad == 'mililitros') {
-        return $cantidad; // ya está en mililitros
-    }
-
-    throw new Exception("Unidad de medida no válida: " . $unidad);
-}
 
     /***************************************************************************
      * <2>. eliminar
@@ -193,5 +239,51 @@ class Configuraciones
     }
     //************************************************************************* */
 
+
+public function guardarIngredienteEspecial($plato, $insumo, $cantidad, $unidad)
+{
+    try {
+
+        // Verificar si ya existe
+        $sqlCheck = "SELECT id
+                     FROM extra_detalle
+                     WHERE plato_id = :plato
+                     AND insumo_id = :insumo";
+
+        $stmtCheck = $this->db->prepare($sqlCheck);
+
+        $stmtCheck->execute([
+            ':plato' => $plato,
+            ':insumo' => $insumo
+        ]);
+
+        if ($stmtCheck->fetch()) {
+            return "existe";
+        }
+
+        // Insertar
+        $sql = "INSERT INTO extra_detalle
+                (plato_id, insumo_id, cantidad, unidad)
+                VALUES
+                (:plato, :insumo, :cantidad, :unidad)";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            ':plato' => $plato,
+            ':insumo' => $insumo,
+            ':cantidad' => $cantidad,
+            ':unidad' => $unidad
+        ]);
+
+        return true;
+
+    } catch (PDOException $e) {
+
+        error_log("Error ingrediente especial: " . $e->getMessage());
+
+        return false;
+    }
+}
 
 }

@@ -23,6 +23,9 @@ function cambiar(seccion){
     if(seccion=="config"){
           window.location.href = "index.php?route=config";
     }
+        if(seccion=="promos"){
+          window.location.href = "index.php?route=promos";
+    }
 }
 
 

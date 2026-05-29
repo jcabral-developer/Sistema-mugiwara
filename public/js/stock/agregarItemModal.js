@@ -13,7 +13,12 @@ function agregarItem() {
         alert("Por favor completa los datos del ítem");
         return;
     }
-    const item = { id: parseInt(insumoId), nombre: insumoTexto, cantidad: parseFloat(cantidad), unidad: unidad, precio: parseFloat(precio), };
+    const item = { id: parseInt(insumoId),
+         nombre: insumoTexto,
+          cantidad: parseFloat(cantidad),
+           unidad: unidad, 
+           precio: parseFloat(precio),
+         };
   
   
     itemsCompra.push(item);
@@ -54,7 +59,6 @@ function eliminarItem(index) {
     itemsCompra.splice(index, 1);
     renderizarTabla();
 }
-// ... (tus variables itemsCompra y la función agregarItem se mantienen igual)
 
 function guardarTodaLaCompra() {
     // Capturamos los datos del encabezado de tu modal

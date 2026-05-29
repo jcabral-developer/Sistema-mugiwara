@@ -13,7 +13,7 @@
 
 <body>
 
-     <div class="topbar">
+    <div class="topbar">
         <div class="logo-wrapper">
             <img src="/Sistema_mugiwara/public/img/Gemini_Generated_Image_b3vr0wb3vr0wb3vr-removebg-preview.png"
                 alt="Logo Mugiwara" class="logo-img logo-animado">
@@ -23,19 +23,27 @@
 
             <div onclick="cambiar('pedidos')">⚔️ Pedidos</div>
 
-            <div onclick="cambiar('stock')">🍖 Stock <span  class="badge"><?php echo $bajoStock ? 'Bajo' : '' ;?></span></div>
+            <div onclick="cambiar('promos')">🔖 Promos</div>
 
-             <div onclick="cambiar('precios')">🍳 Precios</div>
+            <div onclick="cambiar('stock')">
+                🍖 Stock
+                <?php if ($bajoStock): ?>
+                    <span class="badge">Bajo</span>
+                <?php endif; ?>
+            </div>
+
+            <div onclick="cambiar('precios')">🍳 Precios</div>
 
             <div onclick="cambiar('caja')">💰 Ganancias</div>
 
             <div onclick="cambiar('reportes')">📜 Reportes</div>
 
             <div onclick="cambiar('config')">🛠️ Config</div>
-            
-            <div onclick="confirmarLogout()" style="background: var(--red); border: 2px solid #000; box-shadow: 2px 2px 0px #000;">
-            🚪 Salir
-        </div>
+
+            <div onclick="confirmarLogout()"
+                style="background: var(--red); border: 2px solid #000; box-shadow: 2px 2px 0px #000;">
+                🚪 Salir
+            </div>
 
 
         </div>
@@ -45,7 +53,7 @@
 
     <script src="/Sistema_mugiwara/public/js/redireccion.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-     <script src="/Sistema_mugiwara/public/js/alertaLogin.js"></script>
+    <script src="/Sistema_mugiwara/public/js/alertaLogin.js"></script>
 
 </body>
 

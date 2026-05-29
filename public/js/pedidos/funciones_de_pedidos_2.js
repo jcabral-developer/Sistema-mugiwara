@@ -1,6 +1,6 @@
 
-        // Lógica para seleccionar el pago visualmente
-        let metodoSeleccionado = 'Efectivo';
+        
+        let metodoSeleccionado = '';
         function seleccionarPago(btn, metodo) {
             document.querySelectorAll('.btn-pago').forEach(b => b.classList.remove('active', 'btn-dark', 'btn-primary', 'btn-info'));
             btn.classList.add('active');
@@ -9,7 +9,8 @@
 
         // Función para abrir el historial y cargar datos (Ejemplo visual)
         function abrirHistorial() {
-            const myModal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+            const myModal = new
+             bootstrap.Modal(document.getElementById('modalHistorial'));
             myModal.show();
 
             cargarVentas('HOY');
@@ -57,88 +58,97 @@
         }
 
         function cargarVentas(tipoFiltro) {
-            const cuerpo = document.getElementById('tablaVentasCuerpo');
-            const label = document.getElementById('labelFiltro');
+    const cuerpo = document.getElementById('tablaVentasCuerpo');
+    const label = document.getElementById('labelFiltro');
 
-            label.innerText = (tipoFiltro === 'HOY') ? "DEL DÍA" : "TOTALES";
+    // 1. Actualizar el label descriptivo
+    const labels = {
+        'HOY': "DEL DÍA",
+        'SEMANA': "DE LA SEMANA",
+        'MES': "DEL MES",
+        'TODO': "TOTALES"
+    };
+    label.innerText = labels[tipoFiltro] || "TOTALES";
 
-            // Ajustamos el colspan a 7 porque agregamos la columna del botón
-            cuerpo.innerHTML = '<tr><td colspan="7" class="text-center py-4">🔍 Buscando en el Grand Line...</td></tr>';
+    // 2. ACTUALIZAR ESTILOS DE LOS BOTONES
+    document.querySelectorAll('.btnFiltro').forEach(btn => {
+        // Primero dejamos todos en el estado inactivo (blanco/outline)
+        btn.classList.remove('btn-warning');
+        btn.classList.add('btn-outline-light');
+    });
 
-            const requestBody = { datos: tipoFiltro };
+    // Buscamos el botón que fue clickeado (usando el texto o el parámetro)
+    // Para que esto sea exacto, lo mejor es buscar por el evento o pasar el ID
+    const btnActivo = document.querySelector(`button[onclick="cargarVentas('${tipoFiltro}')"]`);
+    if (btnActivo) {
+        btnActivo.classList.remove('btn-outline-light');
+        btnActivo.classList.add('btn-warning'); // El color activo del sistema
+    }
 
-            fetch("index.php?route=pedidos/traerVentas", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(requestBody)
-            })
-                .then(res => res.json())
-                .then(data => {
-                    cuerpo.innerHTML = '';
+    // 3. Mostrar estado de carga
+    cuerpo.innerHTML = '<tr><td colspan="7" class="text-center py-4">🔍 Buscando en el Grand Line...</td></tr>';
 
-                    if (data.status === "ok" && data.ventas.length > 0) {
-                        document.getElementById('totalVentasDia').innerText = `$${data.totalSumado}`;
-                        document.getElementById('totalGananciaDia').innerText = `$${data.gananciaSumada}`;
+    // 4. Petición Fetch
+    fetch("index.php?route=pedidos/traerVentas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ datos: tipoFiltro })
+    })
+    .then(res => res.json())
+    .then(data => {
+        cuerpo.innerHTML = '';
+        if (data.status === "ok" && data.ventas.length > 0) {
+            document.getElementById('totalVentasDia').innerText = `$${data.totalSumado}`;
+            document.getElementById('totalGananciaDia').innerText = `$${data.gananciaSumada}`;
 
-                        data.ventas.forEach((v, index) => {
-                            let productos = v.productos.split(",").join("<br>");
-                            // ID único para que cada botón abra su propio detalle
-                            const idDetalle = `detalle_${index}`;
-
-                            cuerpo.innerHTML += `
-                    <tr>
-                        <td><small>${v.fecha}</small></td>
-                        <td>${v.direccion || 'Sin dirección asignada'}</td>
-                        <td><span class="badge bg-secondary">${v.productos.split(",").length} Items</span></td>
-                        <td><span class="badge bg-dark">${v.metodo_pago}</span></td>
-                        <td>$${v.total}</td>
-                        <td class="text-success">+$${v.ganancia}</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-warning shadow-sm" 
-                                    type="button" 
-                                    data-bs-toggle="collapse" 
-                                    data-bs-target="#${idDetalle}">
-                                ➕
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="collapse border-start border-warning border-3" id="${idDetalle}">
-                        <td colspan="7" class="bg-light p-3">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <h6 class="text-dark fw-bold border-bottom pb-1">👤 CLIENTE</h6>
-                                    <p class="mb-1 text-uppercase"><b>Nombre:</b> ${v.cliente_nombre || v.cliente || 'No registrado'}</p>
-                                    <p class="mb-0"><b>Tel:</b> ${v.telefono || '---'}</p>
-                                </div>
-                                <div class="col-md-4">
-                                    <h6 class="text-dark fw-bold border-bottom pb-1">📝 DETALLE PEDIDO</h6>
-                                    <div class="small">${productos}</div>
-                                    <div class="mt-2 text-muted small italic"><b>Delivery:</b> $${v.delivery}</div>
-                                </div>
-                                <div class="col-md-4">
-                                    <h6 class="text-dark fw-bold border-bottom pb-1">💬 OBSERVACIONES</h6>
-                                    <div class="p-2 bg-white rounded border small italic">
-                                        ${v.observaciones || 'Sin comentarios.'}
-                                    </div>
-                                </div>
+            data.ventas.forEach((v, index) => {
+                const idDetalle = `detalle_${index}`;
+                let productos = v.productos.split(",").join("<br>");
+                
+                cuerpo.innerHTML += `
+                <tr>
+                    <td><small>${v.fecha}</small></td>
+                    <td>${v.direccion || 'Sin dirección'}</td>
+                    <td><span class="badge bg-secondary">${v.productos.split(",").length} Items</span></td>
+                    <td><span class="badge bg-dark">${v.metodo_pago}</span></td>
+                    <td>$${v.total}</td>
+                    <td class="text-success">+$${v.ganancia}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-warning shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#${idDetalle}">➕</button>
+                    </td>
+                </tr>
+                <tr class="collapse border-start border-warning border-3" id="${idDetalle}">
+                    <td colspan="7" class="bg-light p-3">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <h6 class="text-dark fw-bold border-bottom pb-1">👤 CLIENTE</h6>
+                                <p class="mb-1 text-uppercase"><b>Nombre:</b> ${v.cliente_nombre || v.cliente || 'No registrado'}</p>
+                                <p class="mb-0"><b>Tel:</b> ${v.telefono || '---'}</p>
                             </div>
-                        </td>
-                    </tr>
-                `;
-                        });
-
-                    } else {
-                        cuerpo.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron ventas.</td></tr>';
-                        document.getElementById('totalVentasDia').innerText = "$0";
-                        document.getElementById('totalGananciaDia').innerText = "$0";
-                    }
-                })
-                .catch(err => {
-                    console.error("Error al traer ventas:", err);
-                    cuerpo.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Error al conectar con el servidor.</td></tr>';
-                });
+                            <div class="col-md-4">
+                                <h6 class="text-dark fw-bold border-bottom pb-1">📝 DETALLE</h6>
+                                <div class="small">${productos}</div>
+                                 <div class="mt-2 text-muted small italic"><b>Delivery:</b> $${v.delivery}</div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-dark fw-bold border-bottom pb-1">💬 OBS.</h6>
+                                <div class="p-2 bg-white rounded border small italic">${v.observaciones || 'Sin comentarios.'}</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+        } else {
+            cuerpo.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron ventas en este periodo.</td></tr>';
+            document.getElementById('totalVentasDia').innerText = "$0";
+            document.getElementById('totalGananciaDia').innerText = "$0";
         }
-
+    })
+    .catch(err => {
+        console.error("Error:", err);
+        cuerpo.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Error de conexión.</td></tr>';
+    });
+}
 
         ////////////////////////////
 

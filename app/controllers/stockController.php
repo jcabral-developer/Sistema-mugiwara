@@ -7,7 +7,7 @@ class StockController
     {
         require_once BASE_PATH . '/app/models/configuraciones/insumoModel.php';
         require_once BASE_PATH . '/app/models/stock/StockModel.php';
-     require_once BASE_PATH . '/app/models/SistemaModel.php';
+        require_once BASE_PATH . '/app/models/SistemaModel.php';
 
         $bajoStock = SistemaModel::obtenerStockBajo();
         $insumos = InsumoModel::obtenerTodos();
@@ -130,8 +130,8 @@ class StockController
         $stockModel = new StockModel();
 
         try {
-            $stockModel->actualizarLimites($id, $minimo, $unidad_limite );
-            echo json_encode(['ok' => true, 'mensaje' => 'Stock actualizado correctamente']);
+            $stockModel->actualizarLimites($id, $minimo, $unidad_limite);
+            echo json_encode(['ok' => true, 'mensaje' => 'Límite actualizado correctamente']);
         } catch (Exception $e) {
             echo json_encode(['ok' => false, 'mensaje' => $e->getMessage()]);
         }
@@ -165,4 +165,26 @@ class StockController
         }
         exit;
     }
+
+   public function descontarStock()
+{
+    try {
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if (!$data) {
+            throw new Exception("Datos inválidos");
+        }
+         require_once BASE_PATH . '/app/models/stock/StockModel.php';
+        $modelo = new StockModel();
+         $modelo->descontarStock($data);
+
+        echo json_encode(["status" => "ok"]);
+
+    } catch (Exception $e) {
+        echo json_encode([
+            "status" => "error",
+            "message" => $e->getMessage()
+        ]);
+    }
+}
 }

@@ -4,7 +4,7 @@ class Database
 {
 
         private static $host = 'localhost';
-        private static $db = 'mugiwara';
+        private static $db = 'mugiwara_pruebas';
         private static $user = 'root';
         private static $pass = 'DDIeGckhRbK-Vc14';
         private static $charset = 'utf8mb4';

@@ -9,14 +9,19 @@ class ConfigController
         require_once BASE_PATH . '/app/models/configuraciones/productoModel.php';
         require_once BASE_PATH . '/app/models/configuraciones/rendimientoModel.php';
         require_once BASE_PATH . '/app/models/SistemaModel.php';
+        
 
         $productos = ProductoModel::obtenerTodos();
         $insumos = InsumoModel::obtenerTodos();
         $reglas = RendimientoModel::obtenerTodos();
         $bajoStock = SistemaModel::obtenerStockBajo();
+    
+
 
         require_once BASE_PATH . '/app/views/config/index.php';
     }
+
+
 
 
     public function registrarInsumo()
@@ -37,18 +42,16 @@ class ConfigController
             $errores[] = "El nombre del insumo solo puede contener letras y espacios.";
         }
 
-            if (empty($unidad)) {
+        if (empty($unidad)) {
             $errores[] = "La unidad de medida es obligatoria.";
         }
-     
+
 
 
         if ($errores) {
             $_SESSION['errores'] = $errores;
             header("Location: index.php?route=config");
             exit;
-
-
         }
 
 
@@ -57,7 +60,7 @@ class ConfigController
 
 
         try {
-            $insumo->crearinsumo($nombre,$unidad);
+            $insumo->crearinsumo($nombre, $unidad);
             $_SESSION['success'] = "Insumo registrado correctamente.";
         } catch (Exception $e) {
             $_SESSION['errores'][] = $e->getMessage();
@@ -65,7 +68,6 @@ class ConfigController
 
         header("Location: index.php?route=config");
         exit;
-
     }
 
     public function registrarPlato()
@@ -89,8 +91,6 @@ class ConfigController
             $_SESSION['errores'] = $errores;
             header("Location: index.php?route=config");
             exit;
-
-
         }
 
         require_once BASE_PATH . '/app/models/configuraciones/configuraciones.php';
@@ -106,8 +106,6 @@ class ConfigController
 
         header("Location: index.php?route=config");
         exit;
-
-
     }
 
 
@@ -133,9 +131,6 @@ class ConfigController
 
         header("Location: index.php?route=config");
         exit;
-
-
-
     }
 
     public static function limpiarInputs(string $valor)
@@ -146,28 +141,96 @@ class ConfigController
         return $nombre;
     }
 
-public function eliminarRendimiento()
-{
-    if (!isset($_POST['regla'])) {
-        $_SESSION['errores'][] = "Regla inválida.";
+    public function eliminarRendimiento()
+    {
+        if (!isset($_POST['regla'])) {
+            $_SESSION['errores'][] = "Regla inválida.";
+            header("Location: index.php?route=config");
+            exit;
+        }
+
+        $regla = (int) $_POST['regla'];
+
+        require_once BASE_PATH . '/app/models/configuraciones/configuraciones.php';
+        $config = new Configuraciones();
+
+        try {
+            $config->eliminarRendimiento($regla);
+            $_SESSION['success'] = "Rendimiento eliminado correctamente.";
+        } catch (Exception $e) {
+            $_SESSION['errores'][] = $e->getMessage();
+        }
+
         header("Location: index.php?route=config");
         exit;
     }
 
-    $regla = (int) $_POST['regla'];
 
-    require_once BASE_PATH . '/app/models/configuraciones/configuraciones.php';
-    $config = new Configuraciones();
+    public function ingredienteEspecial()
+    {
 
-    try {
-        $config->eliminarRendimiento($regla);
-        $_SESSION['success'] = "Rendimiento eliminado correctamente.";
-    } catch (Exception $e) {
-        $_SESSION['errores'][] = $e->getMessage();
+
+
+        $plato = $_POST['especial_producto_id'] ?? null;
+        $insumo = $_POST['especial_insumo_id'] ?? null;
+        $cantidad = $_POST['especial_cantidad'] ?? null;
+        $unidad = $_POST['especial_unidad'] ?? null;
+
+        $errores = [];
+
+        if (!$plato) {
+            $errores[] = "Selecciona un plato";
+        }
+
+        if (!$insumo) {
+            $errores[] = "Selecciona un insumo";
+        }
+
+        if (!$cantidad || $cantidad <= 0) {
+            $errores[] = "La cantidad debe ser mayor a 0";
+        }
+
+        if (!$unidad) {
+            $errores[] = "Selecciona una unidad";
+        }
+
+        if (!empty($errores)) {
+            $_SESSION['errores'] = $errores;
+
+            header("Location: " . BASE_URL . "/index.php?route=config");
+            exit;
+        }
+
+        require_once BASE_PATH . '/app/models/configuraciones/configuraciones.php';
+        $modelo = new Configuraciones();
+
+        $resultado = $modelo->guardarIngredienteEspecial(
+            $plato,
+            $insumo,
+            $cantidad,
+            $unidad
+        );
+
+        if ($resultado === true) {
+
+            $_SESSION['success'] = "Ingrediente especial registrado correctamente";
+            header("Location: " . BASE_URL . "/index.php?route=config");
+            exit;
+        } elseif ($resultado === "existe") {
+
+            $_SESSION['errores'] = [
+                "Ese ingrediente especial ya fue registrado para este plato"
+
+            ];
+            header("Location: " . BASE_URL . "/index.php?route=config");
+            exit;
+        } else {
+
+            $_SESSION['errores'] = [
+                "No se pudo registrar el ingrediente especial"
+            ];
+            header("Location: " . BASE_URL . "/index.php?route=config");
+            exit;
+        }
     }
-
-    header("Location: index.php?route=config");
-    exit;
-}
-
 }

@@ -10,51 +10,61 @@ class PrecioModel
         $this->db = Database::connect();
     }
 
-public function obtenerPlatos()
-{
-    try {
-        $sql = "SELECT 
-                    plato.id,
-                    plato.descripcion,
-                    plato.costo_receta,
-                    plato.margen,
-                    plato.precio_venta,
-                    plato.ganancia,
-                    plato.imagen,
+    public function obtenerPlatos()
+    {
 
-                    compra_backup_detalle.costo_receta_anterior,
-
-                    (plato.costo_receta - IFNULL(compra_backup_detalle.costo_receta_anterior, plato.costo_receta)) AS diferencia,
-
-                    CASE 
-                        WHEN compra_backup_detalle.costo_receta_anterior IS NULL THEN 'igual'
-                        WHEN plato.costo_receta > compra_backup_detalle.costo_receta_anterior THEN 'subio'
-                        WHEN plato.costo_receta < compra_backup_detalle.costo_receta_anterior THEN 'bajo'
-                        ELSE 'igual'
-                    END AS variacion
-
+        // SELECT 
+//                     plato.id,
+//                     plato.descripcion,
+//                     plato.costo_receta,
+//                     plato.margen,
+//                     plato.precio_venta,
+//                     plato.ganancia,
+//                     plato.imagen,
+//                     compra_backup_detalle.costo_receta_anterior,
+//                     (plato.costo_receta - IFNULL(compra_backup_detalle.costo_receta_anterior, plato.costo_receta)) AS diferencia,
+//                     CASE 
+//                         WHEN compra_backup_detalle.costo_receta_anterior IS NULL THEN 'igual'
+//                         WHEN plato.costo_receta > compra_backup_detalle.costo_receta_anterior THEN 'subio'
+//                         WHEN plato.costo_receta < compra_backup_detalle.costo_receta_anterior THEN 'bajo'
+//                         ELSE 'igual'
+//                     END AS variacion
+//                 FROM plato
+//                 LEFT JOIN compra_backup_detalle
+//                 ON compra_backup_detalle.entidad_id = plato.id
+//                 AND compra_backup_detalle.tipo = 'plato'
+//                 AND compra_backup_detalle.id = (
+//                     SELECT MAX(id)
+//                     FROM compra_backup_detalle
+//                     WHERE entidad_id = plato.id
+//                     AND tipo = 'plato'
+//                 )
+        try {
+            /////////////////////////////////////////////////////////
+                $sql = "SELECT 
+                plato.id,
+                plato.descripcion,
+                plato.costo_receta,
+                plato.margen,
+                plato.precio_venta,
+                plato.ganancia,
+                plato.imagen,
+                COALESCE(backup_precio_costo.costo_receta, 0) AS costo_receta_anterior,
+                COALESCE(backup_precio_costo.ganancia, 0) AS ganancia_anterior
                 FROM plato
+                LEFT JOIN backup_precio_costo 
+                ON backup_precio_costo.plato_id = plato.id;";
 
-                LEFT JOIN compra_backup_detalle
-                ON compra_backup_detalle.entidad_id = plato.id
-                AND compra_backup_detalle.tipo = 'plato'
-                AND compra_backup_detalle.id = (
-                    SELECT MAX(id)
-                    FROM compra_backup_detalle
-                    WHERE entidad_id = plato.id
-                    AND tipo = 'plato'
-                )";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    } catch (PDOException $e) {
-        error_log("Error en obtenerPlatos: " . $e->getMessage());
-        return [];
+        } catch (PDOException $e) {
+            error_log("Error en obtenerPlatos: " . $e->getMessage());
+            return [];
+        }
     }
-}
 
     public function obtenerImpactoPlato($plato_id)
     {
@@ -112,10 +122,14 @@ public function obtenerPlatos()
     public function obtenerIngredientesPlato($plato_id)
     {
         try {
-
+            //(rendimiento.cantidad_usada / rendimiento.rendimiento) * insumo.precio_unitario as parcial,
             $sql = "SELECT 
                 insumo.descripcion,
-            (rendimiento.cantidad_usada / rendimiento.rendimiento) * insumo.precio_unitario as parcial, (rendimiento.cantidad_usada / rendimiento.rendimiento) as cantidad
+                insumo.precio_unitario,
+                insumo.unidad_medida,
+                rendimiento.cantidad_usada,
+                rendimiento.rendimiento,
+                (rendimiento.cantidad_usada / rendimiento.rendimiento) as cantidad
                 FROM rendimiento
                 INNER JOIN insumo
                 ON rendimiento.insumo = insumo.id
@@ -177,7 +191,7 @@ public function obtenerPlatos()
     public function actualizarRutaImagen($id, $nombreArchivo)
     {
         try {
-            $sql = "UPDATE plato SET imagen = ? WHERE id = ?"; // Verifica si tu columna es 'imagen' o 'ruta_imagen'
+            $sql = "UPDATE plato SET imagen = ? WHERE id = ?";
             $stmt = $this->db->prepare($sql);
             return $stmt->execute([$nombreArchivo, $id]);
         } catch (Exception $e) {

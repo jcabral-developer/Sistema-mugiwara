@@ -10,7 +10,64 @@
     <link rel="stylesheet" href="/Sistema_mugiwara/public/css/cssPedido.css">
     <link rel="icon" type="image/x-icon"
         href="/Sistema_mugiwara/public/img/Gemini_Generated_Image_b3vr0wb3vr0wb3vr-removebg-preview.png" />
+    <style>
+        /* Estilos Piratas para el Modal de Ingredientes Especiales */
+        .modal-pirata .modal-content {
+            background: #f4eccf;
+            /* Color pergamino idéntico a tus cards */
+            border: 4px solid #5c3a21;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
 
+        .modal-pirata .modal-header {
+            background: #1a1a1a;
+            border-bottom: 3px solid #ffc107;
+        }
+
+        .item-ingrediente {
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid #5c3a21;
+            border-radius: 8px;
+            padding: 10px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .item-ingrediente:hover {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .item-ingrediente input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Subtabla para los extras desplegables */
+        .fila-extras {
+            background: rgba(0, 0, 0, 0.05);
+            font-size: 0.85rem;
+        }
+
+        .badge-extra {
+            background-color: #5c3a21;
+            color: #ffc107;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-desplegar {
+            background: none;
+            border: none;
+            font-size: 0.8rem;
+            color: #5c3a21;
+            transition: transform 0.2s;
+        }
+
+        .btn-desplegar.abierto {
+            transform: rotate(180deg);
+        }
+    </style>
 </head>
 
 
@@ -25,6 +82,8 @@
         <div class="menu">
 
             <div onclick="cambiar('pedidos')">⚔️ Pedidos</div>
+
+            <div onclick="cambiar('promos')">🔖 Promos</div>
 
             <div onclick="cambiar('stock')">🍖 Stock <span class="badge"><?php echo $bajoStock ? 'Bajo' : ''; ?></span>
             </div>
@@ -46,7 +105,6 @@
 
     <div class="main-container">
         <div class="row g-4">
-
             <div class="col-lg-7">
                 <div class="card-pergamino h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -59,27 +117,24 @@
                     </div>
 
                     <div class="mb-3 d-flex gap-2">
-                        <button class="btn btn-sm btn-dark font-bangers"
-                            onclick="filtrarCategoria('todos')">TODOS</button>
-                        <button class="btn btn-sm btn-outline-dark font-bangers"
-                            onclick="filtrarCategoria('pizzas')">PIZZAS</button>
-                        <button class="btn btn-sm btn-outline-dark font-bangers"
-                            onclick="filtrarCategoria('sandwich')">SÁNDWICH</button>
-                        <button class="btn btn-sm btn-outline-dark font-bangers"
-                            onclick="filtrarCategoria('bebidas')">BEBIDAS</button>
+                        <button class="btn btn-sm btn-dark font-bangers" onclick="filtrarCategoria('todos')">TODOS</button>
+                        <button class="btn btn-sm btn-outline-dark font-bangers" onclick="filtrarCategoria('pizzas')">PIZZAS</button>
+                        <button class="btn btn-sm btn-outline-dark font-bangers" onclick="filtrarCategoria('sandwich')">SÁNDWICH</button>
+                        <button class="btn btn-sm btn-outline-dark font-bangers" onclick="filtrarCategoria('bebidas')">BEBIDAS</button>
                     </div>
+
                     <div class="menu-grid" id="contenedorPlatos">
                         <?php foreach ($platos as $p): ?>
                             <?php
                             $fotoPlato = !empty($p['imagen']) ? $p['imagen'] : 'default.png';
-                            $rutaCompleta = "/Sistema_mugiwara/public/img/imagenes_de_comidas/" . $fotoPlato;
-                            // Importante: Asegúrate de que $p['categoria'] venga de tu consulta SQL
+                            $carpeta = !empty($p['esPromo']) ? 'promos' : 'imagenes_de_comidas';
+                            $rutaCompleta = "/Sistema_mugiwara/public/img/$carpeta/" . $fotoPlato;
                             $categoria = strtolower($p['categoria'] ?? 'otros');
                             ?>
 
                             <div class="card-plato" data-categoria="<?php echo $categoria; ?>"
                                 data-nombre="<?php echo strtolower($p['descripcion']); ?>"
-                                onclick="agregarPlato(<?php echo $p['id']; ?>, '<?php echo $p['descripcion']; ?>', <?php echo $p['precio_venta']; ?>)">
+                                onclick="agregarPlato('<?php echo $p['id']; ?>', '<?php echo addslashes($p['descripcion']); ?>', <?php echo $p['precio_venta']; ?>)">
 
                                 <div class="mb-2">
                                     <img src="<?php echo $rutaCompleta; ?>" alt="<?php echo $p['descripcion']; ?>"
@@ -229,10 +284,12 @@
                 <div class="modal-header bg-dark text-white border-0 d-flex justify-content-between align-items-center">
                     <h5 class="modal-title font-bangers fs-3">📊 REGISTRO DE VENTAS</h5>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-warning font-bangers px-3" onclick="cargarVentas('HOY')">📅
-                            HOY</button>
-                        <button class="btn btn-sm btn-outline-light font-bangers px-3"
-                            onclick="cargarVentas('TODOS')">🌎 TODOS</button>
+                        <button class="btn btn-sm btn-warning font-bangers px-3 btnFiltro"
+                            onclick="cargarVentas('HOY')">📅 HOY</button>
+                        <button class="btn btn-sm btn-outline-light font-bangers px-3 btnFiltro"
+                            onclick="cargarVentas('SEMANA')">🌎 SEMANA</button>
+                        <button class="btn btn-sm btn-outline-light font-bangers px-3 btnFiltro"
+                            onclick="cargarVentas('MES')">🌎 MES</button>
                         <button type="button" class="btn-close btn-close-white ms-3" data-bs-dismiss="modal"></button>
                     </div>
                 </div>
@@ -274,9 +331,176 @@
             </div>
         </div>
     </div>
+<!-- 
+    MODAL PARA INGREDIENTES -->
+    <div class="modal fade modal-pirata" id="modalIngredientesEspeciales" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header text-white">
+                    <h5 class="modal-title font-bangers fs-3 text-warning">🧪 CONFIGURAR PIZZA / EXTRAS</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-0">
+                    <ul class="nav nav-tabs nav-justified bg-dark" id="modalTabs" role="tablist" style="border-bottom: 2px solid #ffc107;">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-content-btn active text-warning fw-bold py-3 w-100 border-0 bg-transparent"
+                                id="tab-extras-tab" data-bs-toggle="tab" data-bs-target="#tab-extras"
+                                type="button" role="tab" aria-controls="tab-extras" aria-selected="true" onclick="setModoModal('entera')">
+                                ➕ AGREGAR EXTRAS
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-content-btn text-white fw-bold py-3 w-100 border-0 bg-transparent"
+                                id="tab-mitad-tab" data-bs-toggle="tab" data-bs-target="#tab-mitad"
+                                type="button" role="tab" aria-controls="tab-mitad" aria-selected="false" onclick="setModoModal('mitad')">
+                                🍕 PIZZA MITAD Y MITAD
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content p-3" id="modalTabsContent">
+
+                        <div class="tab-pane fade show active" id="tab-extras" role="tabpanel" aria-labelledby="tab-extras-tab">
+                            <p class="fw-bold text-dark text-center mb-3">Selecciona los ingredientes especiales para este plato:</p>
+                            <div id="contenedorIngredientesCheck" class="d-flex flex-column gap-2" style="max-height: 300px; overflow-y: auto;">
+                                <?php if (!empty($ingredientesEspeciales)): ?>
+
+                                    <?php foreach ($ingredientesEspeciales as $ing): ?>
+
+                                        <div class="item-ingrediente d-flex justify-content-between align-items-center"
+                                            onclick="toggleCheck(this)">
+
+                                            <div class="d-flex align-items-center gap-3">
+
+                                              <input type="checkbox"
+    class="form-check-input border-dark check-especial"
+    value="<?= $ing['insumo_id'] ?>"
+    data-nombre="<?= htmlspecialchars($ing['insumo']) ?>"
+    data-precio="<?= $ing['precio_extra'] ?>"
+    data-cantidad="<?= $ing['cantidad'] ?>"
+    data-unidad="<?= $ing['unidad'] ?>"
+    onclick="event.stopPropagation();">
+
+                                                <span class="fw-bold text-uppercase text-dark">
+                                                    <?= htmlspecialchars($ing['insumo']) ?>
+                                                </span>
+
+                                            </div>
+
+                                            <span class="badge bg-dark text-warning rounded-pill">
+                                                <?= $ing['cantidad'] ?> <?= $ing['unidad'] ?>
+                                            </span>
+
+                                        </div>
+
+                                    <?php endforeach; ?>
+
+                                <?php else: ?>
+
+                                    <p>No hay ingredientes especiales registrados.</p>
+
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="tab-mitad" role="tabpanel" aria-labelledby="tab-mitad-tab">
+                            <p class="fw-bold text-dark text-center mb-3">Armá la combinación combinando dos sabores de pizza:</p>
+
+                            <div class="row g-3">
+
+                                <!-- MITAD IZQUIERDA -->
+                                <div class="col-md-6 style-mitad-izq">
+                                    <label class="fw-bold text-dark small mb-1">
+                                        👈 PRIMERA MITAD:
+                                    </label>
+
+                                    <select id="selectSaborIzq"
+                                        class="form-select border-dark fw-bold text-uppercase">
+
+                                        <!-- SIN EXTRA -->
+                                        <option value="" data-precio="0">
+                                            🍕 Normal (Sin ingrediente especial)
+                                        </option>
+
+                                        <?php if (!empty($ingredientesEspeciales)): ?>
+
+                                            <?php foreach ($ingredientesEspeciales as $ing): ?>
+
+                                                <<option
+    value="<?= $ing['insumo_id'] ?>"
+    data-nombre="<?= htmlspecialchars($ing['insumo']) ?>"
+    data-precio="<?= $ing['precio_extra'] ?>"
+    data-cantidad="<?= $ing['cantidad'] ?>"
+    data-unidad="<?= $ing['unidad'] ?>">
+
+    <?= ucfirst(htmlspecialchars($ing['insumo'])) ?>
+
+</option>
+                                            <?php endforeach; ?>
+
+                                        <?php endif; ?>
+
+                                    </select>
+                                </div>
+
+                                <!-- MITAD DERECHA -->
+                                <div class="col-md-6">
+                                    <label class="fw-bold text-dark small mb-1">
+                                        👉 SEGUNDA MITAD:
+                                    </label>
+
+                                    <select id="selectSaborDer"
+                                        class="form-select border-dark fw-bold text-uppercase">
+
+                                        <!-- SIN EXTRA -->
+                                        <option value="" data-precio="0">
+                                            🍕 Normal (Sin ingrediente especial)
+                                        </option>
+
+                                        <?php if (!empty($ingredientesEspeciales)): ?>
+
+                                            <?php foreach ($ingredientesEspeciales as $ing): ?>
+
+                                         <option
+    value="<?= $ing['insumo_id'] ?>"
+    data-nombre="<?= htmlspecialchars($ing['insumo']) ?>"
+    data-precio="<?= $ing['precio_extra'] ?>"
+    data-cantidad="<?= $ing['cantidad'] ?>"
+    data-unidad="<?= $ing['unidad'] ?>">
+
+    <?= ucfirst(htmlspecialchars($ing['insumo'])) ?>
+
+</option>
+                    <?php endforeach; ?>
+
+                                        <?php endif; ?>
+
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="alert alert-secondary mt-3 mb-0 text-center py-2 border-dark">
+                                <span class="fw-bold text-dark" style="font-size: 0.9rem;">El precio final será el promedio de ambas mitades.</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 bg-dark d-flex gap-2">
+                    <button type="button" class="btn btn-secondary font-bangers px-4" data-bs-dismiss="modal">CANCELAR</button>
+                    <button type="button" class="btn btn-warning font-bangers px-4 text-dark" onclick="confirmarSeleccionModal()">🍖 AGREGAR AL PEDIDO</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- CODIGO PARA LA GENERACION DE IMAGEN A WHATSAPP -->
 
     <div id="ticket-para-imagen"
         style="position: absolute; left: -9999px; width: 450px; background: #f8f9fa; padding: 0; color: #333; font-family: 'Montserrat', sans-serif; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
@@ -356,7 +580,6 @@
         <div
             style="text-align: center; padding: 20px; background: #fff; font-size: 12px; color: #adb5bd; border-top: 1px solid #f1f1f1;">
             <div style="margin-bottom: 5px; letter-spacing: 1px;">¡GRACIAS POR TU COMPRA!</div>
-            <div class="desarrollo">Desarrollado por JuanDev</div>
         </div>
     </div>
 
@@ -365,12 +588,135 @@
 
 
 
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/Sistema_mugiwara/public/js/pedidos/funciones_de_pedidos.js"></script>
     <script src="/Sistema_mugiwara/public/js/redireccion.js"></script>
     <script src="/Sistema_mugiwara/public/js/pedidos/funciones_de_pedidos_2.js"></script>
+
+    <!-- <script>
+        // Objeto temporal para guardar los datos del plato especial seleccionado
+        let platoEspecialTemporal = null;
+        let modalEspecial = null;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            modalEspecial = new bootstrap.Modal(document.getElementById('modalIngredientesEspeciales'));
+        });
+
+        function evaluarAgregarPlato(id, descripcion, precio) {
+            // Si la descripción tiene la palabra 'especial', abrimos el modal
+            if (descripcion.toLowerCase().includes('especial')) {
+                platoEspecialTemporal = { 
+                    id, descripcion, precio 
+                };
+                
+                // Limpiamos los checkbox del modal antes de abrirlo
+                document.querySelectorAll('.check-especial').forEach(chk => chk.checked = false);
+                
+                modalEspecial.show();
+            } else {
+                // Si es un plato común, llamamos directamente a tu función nativa de funciones_de_pedidos.js
+                if (typeof agregarPlato === "function") {
+                    agregarPlato(id, descripcion, precio);
+                }
+            }
+        }
+
+        function toggleCheck(elemento) {
+            const checkbox = elemento.querySelector('.check-especial');
+            checkbox.checked = !checkbox.checked;
+        }
+
+        function confirmarPlatoEspecial() {
+            if (!platoEspecialTemporal) return;
+
+            // Recopilamos los ingredientes que tildó el usuario
+            let ingredientesElegidos = [];
+            document.querySelectorAll('.check-especial:checked').forEach(chk => {
+                ingredientesElegidos.push({
+                    id: chk.value,
+                    nombre: chk.getAttribute('data-nombre'),
+                    gramos: chk.getAttribute('data-gramos')
+                });
+            });
+
+            // Cerramos el modal
+            modalEspecial.hide();
+
+            // Renderizamos la fila en la tabla del pedido actual
+            inyectarFilaPedidoEspecial(platoEspecialTemporal, ingredientesElegidos);
+            
+            // Limpiamos temporal
+            platoEspecialTemporal = null;
+        }
+
+        function inyectarFilaPedidoEspecial(plato, extras) {
+            const tbody = document.getElementById('lista-pedido');
+            const randomId = 'extra_' + Math.floor(Math.random() * 100000);
+            
+            // Generamos la fila principal del producto
+            let filaPrincipal = document.createElement('tr');
+            filaPrincipal.innerHTML = `
+                <td class="fw-bold">
+                    ${extras.length > 0 ? `<button class="btn-desplegar" onclick="toggleSubfila('${randomId}', this)">▼</button>` : ''}
+                    🍕 ${plato.descripcion.toUpperCase()}
+                </td>
+                <td>1</td>
+                <td>$${plato.precio.toLocaleString('es-AR')}</td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-danger py-0 px-1" onclick="this.closest('tr').nextElementSibling?.remove(); this.closest('tr').remove();">❌</button>
+                </td>
+            `;
+            tbody.appendChild(filaPrincipal);
+
+            // Si seleccionó extras, creamos la fila oculta colapsable justo debajo
+            if (extras.length > 0) {
+                let filaSub = document.createElement('tr');
+                filaSub.id = randomId;
+                filaSub.className = "fila-extras";
+                filaSub.style.display = "none"; // Oculta por defecto
+                
+                let listaExtrasHTML = extras.map(e => `
+                    <span class="badge badge-extra mb-1 d-inline-block p-2 me-1">
+                        🧪 ${e.nombre} (${e.gramos})
+                    </span>
+                `).join('');
+
+                filaSub.innerHTML = `
+                    <td colspan="4" class="ps-4 py-2 border-start border-3 border-warning">
+                        <div class="small fw-bold text-muted mb-1">INGREDIENTES ADICIONALES:</div>
+                        ${listaExtrasHTML}
+                    </td>
+                `;
+                tbody.appendChild(filaSub);
+            }
+
+            // Actualizar total (Aquí deberías llamar a la función que recalcula el total en tu archivo js de pedidos)
+            actualizarTotalSimulado(plato.precio);
+        }
+
+        function toggleSubfila(id, boton) {
+            const subfila = document.getElementById(id);
+            if (subfila.style.display === "none") {
+                subfila.style.display = "table-row";
+                boton.classList.add('abierto');
+            } else {
+                subfila.style.display = "none";
+                boton.classList.remove('abierto');
+            }
+        }
+
+        function actualizarTotalSimulado(precio) {
+            const totalMonto = document.getElementById('total-monto');
+            let actual = parseInt(totalMonto.innerText.replace('$', '').replace('.', '')) || 0;
+            actual += precio;
+            totalMonto.innerText = "$" + actual.toLocaleString('es-AR');
+            
+            const totalModal = document.getElementById('total-modal');
+            if(totalModal) totalModal.innerText = "$" + actual.toLocaleString('es-AR');
+        }
+    </script> -->
 </body>
 
 

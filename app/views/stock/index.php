@@ -21,13 +21,16 @@
                 alt="Logo Mugiwara" class="logo-img logo-animado">
             <a href="index.php?route=" class="logo"> MUGIWARA</a>
         </div>
-        <div class="menu">
+          <div class="menu">
 
             <div onclick="cambiar('pedidos')">⚔️ Pedidos</div>
 
-            <div onclick="cambiar('stock')">🍖 Stock <span  class="badge"><?php echo $bajoStock ? 'Bajo' : '' ;?></span></div>
+             <div onclick="cambiar('promos')">🔖 Promos</div>
 
-             <div onclick="cambiar('precios')">🍳 Precios</div>
+            <div onclick="cambiar('stock')">🍖 Stock <span class="badge"><?php echo $bajoStock ? 'Bajo' : ''; ?></span>
+            </div>
+
+            <div onclick="cambiar('precios')">🍳 Precios</div>
 
             <div onclick="cambiar('caja')">💰 Ganancias</div>
 
@@ -108,7 +111,12 @@
                 <div class="card-body p-4 text-dark">
                     <div class="ticket-pirata rounded shadow-sm">
                         <div class="text-center mb-3">
-                            <span class="font-bangers text-danger fs-5 border border-danger p-1 rounded"><?php echo !empty($ultimaCompra) ? $ultimaCompra[0]['fecha'] : ''; ?></span>
+                            <span class="font-bangers text-danger fs-5 border border-danger p-1 rounded"><?php
+                            
+                            $fecha = !empty($ultimaCompra[0]['fecha']) ? $ultimaCompra[0]['fecha'] : '';
+                            echo !empty($fecha) ? date("d/m/Y", strtotime($fecha)) : '';
+                            
+                            ?></span>
                         </div>
 
                        
@@ -125,14 +133,14 @@
                                 <tbody>
                                        
                               <?php if (!empty($ultimaCompra)): ?>
-    <?php foreach ($ultimaCompra as $compra): ?>   
-        <tr class="fw-bold">
-            <td> ✦ <?php echo $compra['descripcion']; ?></td>
-            <td class="text-center"><?php echo $compra['cantidad'] . ' ' . $compra['unidad_medida']; ?></td>
-            <td class="text-end"><?php echo $compra['precio_unitario']; ?></td>
-        </tr>
-    <?php endforeach; ?>
-<?php endif; ?>
+                                    <?php foreach ($ultimaCompra as $compra): ?>   
+                                        <tr class="fw-bold">
+                                            <td> ✦ <?php echo $compra['descripcion']; ?></td>
+                                            <td class="text-center"><?php echo $compra['cantidad'] . ' ' . $compra['unidad_medida']; ?></td>
+                                            <td class="text-end"><?php echo number_format($compra['precio_unitario'], 2, ',', '.');  ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                                        
                                 </tbody>
                                 <tfoot>
@@ -293,9 +301,9 @@
                                                     ⚠️ Editar Mínimo
                                                 </button>
 
-                                                <button class="btn btn-outline-danger btn-sm shadow-sm fw-bold"
-                                                    onclick="editarLimite(<?= $stocks['id'] ?>, '<?= htmlspecialchars($stocks['descripcion']) ?>', <?= $stocks['stock_minimo'] ?? 0 ?>, '<?= htmlspecialchars($stocks['unidad_medida']) ?>')">
-                                                    ⚠️ Dar de baja
+                                               <button class="btn btn-outline-danger btn-sm shadow-sm fw-bold"
+                                                    onclick="abrirModalDescuento(<?= $stocks['id'] ?>, '<?= htmlspecialchars($stocks['descripcion']) ?>')">
+                                                    📉 DESCONTAR STOCK
                                                 </button>
                                             </div>
                                         </td>
@@ -388,7 +396,7 @@
                                         <td><span
                                                 class="badge bg-info text-dark"><?= htmlspecialchars($compra['comprador']) ?></span>
                                         </td>
-                                        <td class="fw-bold text-success">$ <?= htmlspecialchars($compra['total']) ?></td>
+                                        <td class="fw-bold text-success">$ <?= number_format(htmlspecialchars($compra['total']), 2, ',', '.');  ?></td>
                                         <td class="text-center">
                                             <button class="btn btn-warning btn-sm shadow-sm"
                                                 onclick="editarCompra(<?= $compra['id'] ?>)">
@@ -444,7 +452,7 @@
                         <select id="itemInsumo" class="form-select">
                             <option value="">Seleccione...</option>
                             <?php foreach ($insumos as $insumo): ?>
-                                <option value="<?= $insumo['id'] ?>"><?= htmlspecialchars($insumo['descripcion']) ?>
+                                <option value="<?= $insumo['id'] ?>"><?= htmlspecialchars(ucfirst($insumo['descripcion'])) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -624,7 +632,7 @@
         </div>
     </div>
 
-
+<!-- modal ára dar de baja stock -->
     <div class="modal-overlay" id="modalAjusteLimite" style="display: none;">
         <div class="modal-pergamino">
 
@@ -700,6 +708,64 @@
 
         </div>
     </div>
+<div class="modal-overlay" id="modalDescontarStock" style="display: none;">
+    <div class="modal-pergamino">
+        <div class="modal-header">
+            <h2 id="descuentoTitulo">📉 DESCONTAR INSUMO</h2>
+        </div>
+
+        <form id="formDescontarStock">
+            <input type="hidden" id="descuentoIdInsumo">
+
+            <div class="p-2 mb-3 rounded-3 text-center" style="background: rgba(0,0,0,0.05); border: 1px dashed #000;">
+                <span class="font-bangers fs-4" id="nombreInsumoDescontar">---</span>
+            </div>
+
+            <div class="campo-grupo mb-3">
+                <label>⚖️ CANTIDAD A DESCONTAR</label>
+                <div style="display:flex; gap:10px; align-items: center;">
+                    <div class="flex-grow-1">
+                        <small class="text-muted d-block mb-1">Kilos / Unidades / Litros</small>
+                        <input type="number" step="1" min="0" id="desc_entero" class="form-control-mugiwara" placeholder="0">
+                    </div>
+                    <div class="flex-grow-1">
+                        <small class="text-muted d-block mb-1">Gramos / Mililitros</small>
+                        <input type="number" step="1" min="0" max="999" id="desc_decimal" class="form-control-mugiwara" placeholder="0">
+                    </div>
+                </div>
+                <small class="text-muted mt-2 d-block">
+                    Ej: Para descontar 1.5kg, pone 1 en el primero y 500 en el segundo.
+                </small>
+            </div>
+
+            <div class="campo-grupo mb-3">
+                <label>🚩 MOTIVO DEL DESCUENTO</label>
+                <select id="descMotivo" class="form-control-mugiwara" required>
+                    <option value="" disabled selected>Seleccione un motivo...</option>
+                    <option value="Vencimiento">Vencimiento 🤢</option>
+                    <option value="Desperdicio">Desperdicio / Caída 🧹</option>
+                    <option value="Consumo Interno">Consumo Interno 🍖</option>
+                    <option value="Error de Carga">Error de Carga Anterior ❌</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="campo-grupo mb-4">
+                <label>📝 NOTAS ADICIONALES</label>
+                <textarea id="descNotas" class="form-control-mugiwara" rows="2" placeholder="Detalles del por qué..."></textarea>
+            </div>
+
+            <div class="footer-acciones">
+                <button type="button" onclick="cerrarModalDescuento()" class="btn-cancelar">
+                    CANCELAR
+                </button>
+                <button type="submit" class="btn-registrar">
+                    ⚓ APLICAR BAJA
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -710,6 +776,65 @@
     <script src="/Sistema_mugiwara/public/js/stock/detalleCompra.js"></script>
     <script src="/Sistema_mugiwara/public/js/stock/eliminar.js"></script>
     <script src="/Sistema_mugiwara/public/js/stock/ajustarStock.js"></script>
+
+    <script>
+
+
+// Función para abrir el modal de descuento
+function abrirModalDescuento(id, nombre) {
+    document.getElementById('descuentoIdInsumo').value = id;
+    document.getElementById('nombreInsumoDescontar').innerText = "📦 " + nombre.toUpperCase();
+    document.getElementById('modalDescontarStock').style.display = 'flex';
+}
+
+// Función para cerrar el modal
+function cerrarModalDescuento() {
+    document.getElementById('formDescontarStock').reset();
+    document.getElementById('modalDescontarStock').style.display = 'none';
+}
+
+// Manejo del envío del formulario
+document.getElementById('formDescontarStock').onsubmit = async function(e) {
+    e.preventDefault();
+
+    const datos = {
+        id: document.getElementById('descuentoIdInsumo').value,
+        entero: parseFloat(document.getElementById('desc_entero').value) || 0,
+        decimal: parseFloat(document.getElementById('desc_decimal').value) || 0,
+        motivo: document.getElementById('descMotivo').value,
+        notas: document.getElementById('descNotas').value
+    };
+
+    // 🚨 VALIDACIÓN
+    if (datos.entero === 0 && datos.decimal === 0) {
+        Swal.fire("⚠️ Atención", "Debes ingresar una cantidad válida", "warning");
+        return;
+    }
+
+    try {
+        const res = await fetch("index.php?route=stock/descontarStock", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(datos)
+        });
+
+        const response = await res.json();
+
+        if (response.status === "ok") {
+            Swal.fire("✅ Listo", "Stock descontado correctamente", "success");
+            cerrarModalDescuento();
+            location.reload();
+        } else {
+            Swal.fire("❌ Paso algo inesperado", response.message, "error");
+        }
+
+    } catch (error) {
+        console.error(error);
+        Swal.fire("❌ Error", "Error de conexión", "error");
+    }
+};    </script>
 </body>
 
 </html>

@@ -40,9 +40,9 @@
     border-bottom: 5px solid #2f3542;
     box-shadow: 0 5px 15px rgba(0,0,0,.5);
 /* ARREGLO PARA STICKY */
-    /* position: sticky;
+    position: sticky;
     top: 0;           /* OBLIGATORIO: indica que se pegue al borde superior */
-   /* z-index: 1000;  */
+    z-index: 1000;
 
 }
 
@@ -86,14 +86,16 @@
     font-weight: bold;
     transition: 0.3s;
     color: white;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
 }
 
 .menu div:hover {
     background: var(--blue);
     box-shadow: 0 0 10px var(--gold);
 }
- .badge {
+
+
+  .badge {
             background: var(--red);
             color: white;
             padding: 2px 8px;

@@ -7,63 +7,108 @@ Class PedidosController{
 
 public function index()
     {
-        // require_once BASE_PATH . '/app/models/configuraciones/insumoModel.php';
-        // require_once BASE_PATH . '/app/models/configuraciones/productoModel.php';
-        // require_once BASE_PATH . '/app/models/configuraciones/rendimientoModel.php';
-
-        // $productos = ProductoModel::obtenerTodos();
-        // $insumos = InsumoModel::obtenerTodos();
-        // $reglas = RendimientoModel::obtenerTodos();
 
          require_once BASE_PATH . '/app/models/SistemaModel.php';
         require_once BASE_PATH . '/app/models/pedidos/pedidosModel.php';
 
+
         $bajoStock = SistemaModel::obtenerStockBajo();
         $modelo = new PedidoModel();
         $platos = $modelo->obtenerPlatos();
+        $ingredientesEspeciales = PedidoModel::obtenerIngredientesEspeciales();
 
         require_once BASE_PATH . '/app/views/pedidos/index.php';
     }
 
-
 public function guardarVenta()
 {
-    // Limpiar cualquier salida previa (buffer) para evitar errores de JSON inválido
-  if (ob_get_length()) ob_clean();
+    // Limpiar cualquier salida previa
+    if (ob_get_length()) ob_clean();
+
     header('Content-Type: application/json');
 
     $json = file_get_contents("php://input");
     $data = json_decode($json, true);
 
-
-    
-    // Validamos que el JSON sea válido y que traiga los datos mínimos (método y detalle)
+    // =========================
+    // VALIDAR JSON
+    // =========================
     if (!$data || empty($data['metodo_pago']) || empty($data['items'])) {
+
         echo json_encode([
-            "status" => "error", 
+            "status" => "error",
             "message" => "Datos incompletos o formato JSON inválido"
         ]);
+
         return;
     }
 
+    // =========================
+    // VALIDAR ITEMS
+    // =========================
+    foreach ($data['items'] as $item) {
+
+        // VALIDACIÓN BÁSICA
+        if (
+            !isset($item['id']) ||
+            !isset($item['nombre']) ||
+            !isset($item['precio']) ||
+            !isset($item['cant'])
+        ) {
+
+            echo json_encode([
+                "status" => "error",
+                "message" => "Item inválido en la venta"
+            ]);
+
+            return;
+        }
+
+        // =========================
+        // ASEGURAR EXTRAS
+        // =========================
+        if (!isset($item['extras'])) {
+            $item['extras'] = [];
+        }
+
+        // =========================
+        // ASEGURAR MITADES
+        // =========================
+        if (!isset($item['mitades'])) {
+            $item['mitades'] = null;
+        }
+    }
+
     try {
+
         require_once BASE_PATH . '/app/models/pedidos/pedidosModel.php';
+
         $modelo = new PedidoModel();
 
         $resultado = $modelo->guardarVenta($data);
 
         if ($resultado) {
-            echo json_encode(["status" => "ok"]);
+
+            echo json_encode([
+                "status" => "ok"
+            ]);
+
         } else {
-            echo json_encode(["status" => "error", "message" => "Error en la base de datos"]);
+
+            echo json_encode([
+                "status" => "error",
+                "message" => "Error en la base de datos"
+            ]);
         }
+
     } catch (Exception $e) {
-        // Capturamos cualquier error inesperado
-        echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+
+        echo json_encode([
+            "status" => "error",
+            "message" => $e->getMessage()
+        ]);
     }
 }
-
-
 public function traerVentas()
 {
     // Limpiamos cualquier salida previa y enviamos cabecera JSON
@@ -95,8 +140,8 @@ public function traerVentas()
         echo json_encode([
             "status" => "ok",
             "ventas" => $ventas,
-            "totalSumado" => number_format($totalSumado, 0, ',', '.'),
-            "gananciaSumada" => number_format($gananciaSumada, 0, ',', '.')
+            "totalSumado" => number_format($totalSumado, 2, ',', '.'),
+            "gananciaSumada" => number_format($gananciaSumada, 2, ',', '.')
         ]);
 
     } catch (Exception $e) {

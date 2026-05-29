@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mugiwara - Acceso Corporativo</title>
+    <title>Mugiwara - Acceso</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/cssLogin.css">
     <link rel="icon" href="<?= BASE_URL ?>/img/Gemini_Generated_Image_b3vr0wb3vr0wb3vr-removebg-preview.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Bangers&display=swap"
@@ -62,11 +62,14 @@
                     <button type="submit" class="btn-primary" name="iniciar" value="iniciar">INICIAR SESIÓN</button>
                 </form>
 
-                <footer class="form-footer">
-                    <p>&copy; 2026 Mugiwara System. Todos los derechos reservados.</p>
-                    <p style="text-align: center;">Desarrollado por <a href="https://tupagina.com" target="_blank"
-                            class="signature">juandev</a></p>
-                </footer>
+        <footer class="form-footer">
+    <p>&copy; 2026 Mugiwara System. Todos los derechos reservados.</p>
+    <div class="footer-version-container">
+        <span class="badge-version">
+            MUGIWARA VERSION 1.0.0
+        </span>
+    </div>
+</footer>
             </div>
         </div>
 

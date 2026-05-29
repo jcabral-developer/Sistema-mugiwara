@@ -47,6 +47,7 @@ require_once BASE_PATH . '/app/controllers/stockController.php';
 require_once BASE_PATH . '/app/controllers/configController.php';
 require_once BASE_PATH . '/app/controllers/pedidosController.php';
 require_once BASE_PATH . '/app/controllers/preciosController.php';
+require_once BASE_PATH . '/app/controllers/promosController.php';
 
 // 7️ OBTENER RUTA SOLICITADA
 $route = $_GET['route'] ?? '';
@@ -75,6 +76,11 @@ if (!$usuarioLogueado) {
 
         case 'stock':
             $controller = new StockController();
+            $controller->index();
+            break;
+
+        case 'promos':
+            $controller = new PromosController();
             $controller->index();
             break;
 
@@ -111,6 +117,11 @@ if (!$usuarioLogueado) {
         case 'config/insumo':
             $controller = new ConfigController();
             $controller->registrarInsumo();
+            break;
+            
+        case 'config/ingredienteEspecial':
+            $controller = new ConfigController();
+            $controller->ingredienteEspecial();
             break;
         case 'config/plato':
             $controller = new ConfigController();
@@ -178,6 +189,23 @@ if (!$usuarioLogueado) {
             $controller->traerVentas();
             break;
 
+        case 'promos/enviarPromo':
+            $controller = new PromosController();
+            $controller->enviarPromo();
+            break;
+
+        case 'promos/obtenerPromos':
+            $controller = new PromosController();
+            $controller->obtenerPromos();
+            break;
+        case 'promos/eliminarPromo':
+            $controller = new PromosController();
+            $controller->eliminarPromo();
+            exit;
+ case 'stock/descontarStock':
+            $controller = new StockController();
+            $controller->descontarStock();
+            exit;
 
         default:
             $controller = new DashboardController();

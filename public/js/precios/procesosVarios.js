@@ -24,14 +24,31 @@
                         tbody.innerHTML = "";
 
                         let total = 0;
+                        let unidad = '';
 
                         data.forEach(i => {
-                            total += Number(i.parcial);
+                            //total += Number(i.parcial);
+
+                            //caculo de precios  //(rendimiento.cantidad_usada / rendimiento.rendimiento) * insumo.precio_unitario as parcial,
+                            parcial = (i.cantidad_usada / i.rendimiento) * i.precio_unitario;
+                            
+                            total += Number(parcial);
+                            if(i.unidad_medida == 'un'){
+                                
+                                unidad =  'Un';
+                                 
+                            }else if(i.unidad_medida == 'ml'){
+
+                            unidad = 'ml';
+                            }else{
+                                unidad = 'Gr';
+                            }
+
                             tbody.innerHTML += `
                         <tr>
                             <td>${i.descripcion.charAt(0).toUpperCase() + i.descripcion.slice(1)}</td>
-                            <td>${Math.round(i.cantidad)} g</td>
-                            <td>$${i.parcial}</td>
+                            <td>${i.cantidad + ' ' + unidad}</td>
+                            <td>$${parcial}</td>
                         </tr>
                     `;
                         });
@@ -94,6 +111,8 @@
                                     location.reload();
                                 }
                             });
+
+                            
                         } else {
                             Swal.fire({
                                 icon: "error",
@@ -145,10 +164,11 @@
             const alerta = document.getElementById('alertaMargen');
 
             const precioFinal = costoFijo + (costoFijo * (margen / 100));
-            const ganancia = precioFinal - costoFijo;
+            const ganancia = Math.ceil(precioFinal) - costoFijo;
 
             sugeridoElement.innerText = `$${Math.ceil(precioFinal)}`;
-            gananciaElement.innerText = `$${Math.round(ganancia)}`;
+            gananciaElement.innerText =  `$${ganancia.toFixed(2)}`;
+
 
             if (margen < 30) {
                 alerta.style.display = "block";
